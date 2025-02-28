@@ -52,6 +52,12 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
+      fontFamily: {
+        sans: ['Nunito', 'system-ui', 'sans-serif'], // Custom sans-serif stack
+        serif: ['Merriweather', 'serif'], // Custom serif stack
+        mono: ['Fira Code', 'monospace'], // Custom monospace stack
+        custom: ['"Your Custom Font"', 'sans-serif'], // Example custom font
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
