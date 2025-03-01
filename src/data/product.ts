@@ -3,6 +3,7 @@ import { Product } from "~/models/product";
 export const FAKE_PRODUCTS: Product[] = [
   {
     _id: "1",
+    code: "slim_fit_dress_shirt",
     title: "Slim Fit Dress Shirt",
     price: 45.99,
     categoryId: "8", // Dress Shirts
@@ -14,8 +15,8 @@ export const FAKE_PRODUCTS: Product[] = [
         size: "S",
         stock: 10,
         images: [
-          "/img/products/dress_shirt_white_1.jpg",
-          "/img/products/dress_shirt_white_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
       {
@@ -24,8 +25,8 @@ export const FAKE_PRODUCTS: Product[] = [
         size: "M",
         stock: 15,
         images: [
-          "/img/products/dress_shirt_white_1.jpg",
-          "/img/products/dress_shirt_white_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
       {
@@ -34,8 +35,8 @@ export const FAKE_PRODUCTS: Product[] = [
         size: "M",
         stock: 20,
         images: [
-          "/img/products/dress_shirt_blue_1.jpg",
-          "/img/products/dress_shirt_blue_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
       {
@@ -44,8 +45,8 @@ export const FAKE_PRODUCTS: Product[] = [
         size: "L",
         stock: 5,
         images: [
-          "/img/products/dress_shirt_blue_1.jpg",
-          "/img/products/dress_shirt_blue_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
     ],
@@ -54,6 +55,7 @@ export const FAKE_PRODUCTS: Product[] = [
   },
   {
     _id: "2",
+    code: "casual_tshirt",
     title: "Casual T-Shirt",
     price: 19.99,
     categoryId: "9", // T-Shirts
@@ -65,8 +67,8 @@ export const FAKE_PRODUCTS: Product[] = [
         size: "S",
         stock: 8,
         images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
       {
@@ -75,8 +77,8 @@ export const FAKE_PRODUCTS: Product[] = [
         size: "L",
         stock: 12,
         images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
       {
@@ -85,8 +87,8 @@ export const FAKE_PRODUCTS: Product[] = [
         size: "M",
         stock: 10,
         images: [
-          "/img/products/tshirt_red_1.jpg",
-          "/img/products/tshirt_red_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
     ],
@@ -94,40 +96,31 @@ export const FAKE_PRODUCTS: Product[] = [
     updatedAt: new Date(),
   },
   {
-    _id: "2",
-    title: "Casual T-Shirt",
-    price: 19.99,
-    categoryId: "9", // T-Shirts
-    description: "Soft and comfortable casual t-shirt.",
+    _id: "3",
+    code: "running_sneakers",
+    title: "Running Sneakers",
+    price: 69.99,
+    categoryId: "12", // Sneakers
+    description: "High-performance running sneakers for everyday comfort.",
     variants: [
       {
-        color: "black",
-        hexCode: "#000000",
-        size: "S",
+        color: "blue",
+        hexCode: "#0000FF",
+        size: 40,
+        stock: 15,
+        images: [
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
+        ],
+      },
+      {
+        color: "gray",
+        hexCode: "#808080",
+        size: 42,
         stock: 8,
         images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
-        ],
-      },
-      {
-        color: "black",
-        hexCode: "#000000",
-        size: "L",
-        stock: 12,
-        images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
-        ],
-      },
-      {
-        color: "red",
-        hexCode: "#FF0000",
-        size: "M",
-        stock: 10,
-        images: [
-          "/img/products/tshirt_red_1.jpg",
-          "/img/products/tshirt_red_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
     ],
@@ -135,122 +128,31 @@ export const FAKE_PRODUCTS: Product[] = [
     updatedAt: new Date(),
   },
   {
-    _id: "2",
-    title: "Casual T-Shirt",
-    price: 19.99,
-    categoryId: "9", // T-Shirts
-    description: "Soft and comfortable casual t-shirt.",
+    _id: "4",
+    code: "leather_wallet",
+    title: "Leather Wallet",
+    price: 29.99,
+    categoryId: "13", // Wallets
+    description: "Premium leather wallet with multiple compartments.",
     variants: [
       {
         color: "black",
         hexCode: "#000000",
-        size: "S",
-        stock: 8,
-        images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
-        ],
-      },
-      {
-        color: "black",
-        hexCode: "#000000",
         size: "L",
-        stock: 12,
+        stock: 50,
         images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
       {
-        color: "red",
-        hexCode: "#FF0000",
-        size: "M",
-        stock: 10,
-        images: [
-          "/img/products/tshirt_red_1.jpg",
-          "/img/products/tshirt_red_2.jpg",
-        ],
-      },
-    ],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    _id: "2",
-    title: "Casual T-Shirt",
-    price: 19.99,
-    categoryId: "9", // T-Shirts
-    description: "Soft and comfortable casual t-shirt.",
-    variants: [
-      {
-        color: "black",
-        hexCode: "#000000",
-        size: "S",
-        stock: 8,
-        images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
-        ],
-      },
-      {
-        color: "black",
-        hexCode: "#000000",
+        color: "brown",
+        hexCode: "#8B4513",
         size: "L",
-        stock: 12,
+        stock: 30,
         images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
-        ],
-      },
-      {
-        color: "red",
-        hexCode: "#FF0000",
-        size: "M",
-        stock: 10,
-        images: [
-          "/img/products/tshirt_red_1.jpg",
-          "/img/products/tshirt_red_2.jpg",
-        ],
-      },
-    ],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    _id: "2",
-    title: "Casual T-Shirt",
-    price: 19.99,
-    categoryId: "9", // T-Shirts
-    description: "Soft and comfortable casual t-shirt.",
-    variants: [
-      {
-        color: "black",
-        hexCode: "#000000",
-        size: "S",
-        stock: 8,
-        images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
-        ],
-      },
-      {
-        color: "black",
-        hexCode: "#000000",
-        size: "L",
-        stock: 12,
-        images: [
-          "/img/products/tshirt_black_1.jpg",
-          "/img/products/tshirt_black_2.jpg",
-        ],
-      },
-      {
-        color: "red",
-        hexCode: "#FF0000",
-        size: "M",
-        stock: 10,
-        images: [
-          "/img/products/tshirt_red_1.jpg",
-          "/img/products/tshirt_red_2.jpg",
+          "/img/product/white-tshirt.jpg",
+          "/img/product/white-t_shirt.jpg",
         ],
       },
     ],

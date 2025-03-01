@@ -12,6 +12,7 @@ export type Color =
 
 export interface Product {
   _id: string;
+  code: string;
   title: string;
   price: number;
   categoryId: string;

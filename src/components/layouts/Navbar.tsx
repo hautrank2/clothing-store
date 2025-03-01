@@ -34,7 +34,7 @@ function Navbar() {
                 .map((cgr) => {
                   return (
                     <li key={cgr._id} className="">
-                      <Link href={cgr.code}>
+                      <Link href={"/category/" + cgr.code}>
                         <p className="font-semibold hover:font-bold">
                           {cgr.title}
                         </p>
@@ -47,7 +47,7 @@ function Navbar() {
                           .map((cgr2) => {
                             return (
                               <li key={cgr2._id} className="text-nowrap">
-                                <Link href={cgr2.code}>
+                                <Link href={"/category/" + cgr2.code}>
                                   <p className="text-sm leading-8 hover:underline">
                                     {cgr2.title}
                                   </p>
