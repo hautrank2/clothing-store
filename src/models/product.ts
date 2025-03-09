@@ -10,6 +10,20 @@ export type Color =
   | "brown"
   | "gray";
 
+export type ProductSize = "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | number;
+
+export interface ProductSizeStock {
+  size: ProductSize; // Kích thước có thể là chữ hoặc số
+  stock: number; // Số lượng tồn kho
+}
+
+export interface ProductColor {
+  color: Color; // Màu sắc
+  hexCode: string; // Mã màu HEX
+  imgUrls: string[]; // 2 ảnh cho từng màu
+  sizes: ProductSizeStock[]; // Danh sách size và stock
+}
+
 export interface Product {
   _id: string;
   code: string;
@@ -17,17 +31,7 @@ export interface Product {
   price: number;
   categoryId: string;
   description: string;
-  variants: ProductVariant[]; // Danh sách biến thể sản phẩm (mỗi biến thể = màu + size + stock)
+  colors: ProductColor[]; // Danh sách biến thể theo màu sắc (chứa size bên trong)
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface ProductVariant {
-  color: Color; // Màu sắc
-  hexCode: string; // Mã màu HEX
-  size: ProductSize; // Kích thước (S, M, L, XL)
-  stock: number; // Số lượng trong kho
-  images: string[]; // 2 ảnh cho từng màu
-}
-
-export type ProductSize = "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | number;

@@ -8,25 +8,22 @@ export const getValueFromPath = (obj: any, path: string[] | string): any => {
 };
 
 export const prettyObject = (
-  obj: any,
+  obj: Record<string, any>,
   deletes: any[] = [undefined, "", null]
 ) => {
-  Object.keys(obj).forEach((key) => {
+  for (const key in obj) {
     const value = obj[key];
 
-    if (value && typeof value === "object") {
-      // Đệ quy vào các object lồng nhau
+    if (typeof value === "object" && value !== null) {
       prettyObject(value, deletes);
 
-      // Xóa object nếu nó không còn thuộc tính nào sau khi xóa
-      if (Object.keys(value).length === 0) {
-        delete obj[key];
+      if (!Object.keys(value).length) {
+        delete obj[key]; // 🔹 Xóa object nếu rỗng
       }
     } else if (deletes.includes(value)) {
-      // Xóa thuộc tính nếu giá trị là undefined
-      delete obj[key];
+      delete obj[key]; // 🔹 Xóa thuộc tính nếu thuộc `deletes`
     }
-  });
+  }
 
   return obj;
 };

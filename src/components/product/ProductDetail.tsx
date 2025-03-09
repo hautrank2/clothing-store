@@ -3,29 +3,28 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
-import { Product, ProductSize, ProductVariant } from "~/models/product";
+import { Product } from "~/models/product";
 import ColorBox from "../ui/color-box";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 
 function ProductDetail({ productData }: { productData: Product }) {
-  const productByColor = getUniqueColors(productData.variants);
-  const productBySize = getUniqueSizes(productData.variants);
-  const [selectedImg, setSelectedImg] = useState<number>(0);
+  const productByColor = productData.colors;
   const [selectedColor, setSelectedColor] = useState<string>(
     productByColor?.[0]?.color
   );
-  const variant = productByColor.find((e) => e.color === selectedColor);
-  const imgs = variant?.images || [];
+
+  const [selectedImg, setSelectedImg] = useState<number>(0);
+  const pColor = productByColor.find((e) => e.color === selectedColor);
+  const imgs = pColor?.imgUrls || [];
   const [selectedSize, setSelectedSize] = useState<string>();
 
-  const _variant = productData.variants.find(
-    (item) => item.color === variant?.color && item.size == selectedSize
+  const _variant = pColor?.sizes.find(
+    (e) => e.size.toString() === selectedSize
   );
 
-  console.log(selectedSize, selectedColor, _variant);
-  const valid = selectedSize && selectedColor && _variant && _variant.stock > 0;
+  const valid = (_variant?.stock || 0) > 0;
   useEffect(() => {
     setSelectedImg(0);
   }, [selectedColor]);
@@ -85,7 +84,7 @@ function ProductDetail({ productData }: { productData: Product }) {
               variant={"outline"}
               onValueChange={(e) => setSelectedSize(e)}
             >
-              {productBySize.map((prod) => (
+              {pColor?.sizes.map((prod) => (
                 <ToggleGroupItem key={prod.size} value={prod.size.toString()}>
                   {prod.size}
                 </ToggleGroupItem>
@@ -108,41 +107,5 @@ function ProductDetail({ productData }: { productData: Product }) {
     </div>
   );
 }
-
-const getUniqueColors = (variants: ProductVariant[]) => {
-  const uniqueColorsMap = new Map<string, ProductVariant>();
-
-  variants.forEach((variant) => {
-    if (!uniqueColorsMap.has(variant.color)) {
-      uniqueColorsMap.set(variant.color, {
-        color: variant.color,
-        hexCode: variant.hexCode,
-        images: variant.images,
-        size: "XL", // Không cần size vì chỉ lấy thông tin màu
-        stock: 0, // Không cần stock
-      });
-    }
-  });
-
-  return Array.from(uniqueColorsMap.values());
-};
-
-const getUniqueSizes = (variants: ProductVariant[]) => {
-  const uniqueSizesMap = new Map<ProductSize, ProductVariant>();
-
-  variants.forEach((variant) => {
-    if (!uniqueSizesMap.has(variant.size)) {
-      uniqueSizesMap.set(variant.size, {
-        color: variant.color,
-        hexCode: variant.hexCode,
-        images: variant.images,
-        size: variant.size,
-        stock: 0,
-      });
-    }
-  });
-
-  return Array.from(uniqueSizesMap.values());
-};
 
 export default ProductDetail;
