@@ -51,14 +51,15 @@ export function CategoryFormWrapper({
 }: CategoryProps) {
   const isEdit = !!defaultValues;
   const [open, setOpen] = useState(false);
-  const { data = [] } = useCategory();
+  const { data } = useCategory();
 
-  const categoryData = data
-    .filter((e: Category) => e._id !== defaultValues?._id)
-    .map((e: Category) => ({
-      label: e.title,
-      value: e._id,
-    }));
+  const categoryData =
+    data?.items
+      .filter((e: Category) => e._id !== defaultValues?._id)
+      .map((e: Category) => ({
+        label: e.title,
+        value: e._id,
+      })) || [];
 
   const { trigger, isMutating } = usePostCategory();
   const { trigger: triggerPatch, isMutating: isPatchMutating } =
@@ -180,7 +181,6 @@ export function CategoryForm({
   onSubmit: _onSubmit,
   loading,
 }: CategoryFormProps) {
-  console.log("CategoryForm", defaultValues);
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: defaultValues || {

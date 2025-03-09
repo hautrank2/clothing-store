@@ -10,7 +10,7 @@ import { CategorDelete } from "~/components/product/CategoryDelete";
 import { Edit2, Trash } from "lucide-react";
 
 function CategoryPage() {
-  const { data = [], isLoading } = useCategory();
+  const { data, isLoading: loading } = useCategory();
 
   return (
     <div className="mt-4">
@@ -21,8 +21,16 @@ function CategoryPage() {
       </div>
       <TableWrapper
         className="mt-2"
-        data={data}
-        loading={isLoading}
+        data={data ? data.items : []}
+        loading={loading}
+        pagination={
+          data && {
+            pageSize: data.pageSize,
+            pageIndex: data.page,
+            totalCount: data.total,
+            totalPage: data.totalPage,
+          }
+        }
         columns={[
           { title: "Code", dataIndex: "code" },
           { title: "Title", dataIndex: "title" },

@@ -2,6 +2,7 @@ import useSWR, { BareFetcher, SWRResponse } from "swr";
 import { DELETE, GET, PATCH, POST } from "~/lib/axios";
 import { Category } from "~/models/category";
 import useSWRMutation, { SWRMutationResponse } from "swr/mutation";
+import { PaginationResponse } from "~/models/query";
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
@@ -12,18 +13,23 @@ export type CategoryPayload = {
   parentId?: string | null;
 };
 
-export const useCategory = (): SWRResponse => {
-  const fetcher: BareFetcher<Category[]> = (url: string) =>
-    GET<Category[]>(url); // ✅ Fix kiểu dữ liệu fetcher
+type GetResponse = PaginationResponse<Category>;
 
-  const swr = useSWR<Category[]>(`${API_ENDPOINT}/category`, fetcher);
+export const useCategory = (): SWRResponse => {
+  const fetcher: BareFetcher<GetResponse> = (url: string) =>
+    GET<GetResponse>(url);
+
+  const swr = useSWR<GetResponse>(`${API_ENDPOINT}/category`, fetcher, {});
   return {
     ...swr,
-    data:
-      swr.data?.map((e: Category) => ({
-        ...e,
-        imgUrl: `${process.env.NEXT_PUBLIC_ASSET_PREFIX}/${e.imgUrl}`,
-      })) || [],
+    data: {
+      ...swr.data,
+      items:
+        swr.data?.items.map((e: Category) => ({
+          ...e,
+          imgUrl: `${process.env.NEXT_PUBLIC_ASSET_PREFIX}/${e.imgUrl}`,
+        })) || [],
+    },
   };
 };
 
