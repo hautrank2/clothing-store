@@ -1,3 +1,5 @@
+import { Category } from "./category";
+
 export type Color =
   | "black"
   | "white"
@@ -30,6 +32,7 @@ export interface Product {
   title: string;
   price: number;
   categoryId: string;
+  category?: Category | null;
   description: string;
   colors: ProductColor[]; // Danh sách biến thể theo màu sắc (chứa size bên trong)
   createdAt: Date;
