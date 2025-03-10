@@ -5,7 +5,7 @@ import { CategoryFormWrapper } from "~/components/product/CategoryForm";
 import { Button } from "~/components/ui/button";
 import TableWrapper from "~/components/wrapper/table-wrapper";
 import { useCategory } from "~/api/category";
-import { Category, CategoryPopulate } from "~/models/category";
+import { Category } from "~/models/category";
 import { CategorDelete } from "~/components/product/CategoryDelete";
 import { Edit2, Trash } from "lucide-react";
 
@@ -37,8 +37,8 @@ function CategoryPage() {
           { title: "Image", dataIndex: "imgUrl", type: "image" },
           {
             title: "Parent",
-            dataIndex: "parentId",
-            render: (value: Category) => (value ? value.code : "No data"),
+            dataIndex: "parent",
+            render: (value: Category) => (value ? value.code : ""),
           },
           {
             title: "Created at",
@@ -53,17 +53,13 @@ function CategoryPage() {
           {
             title: "",
             dataIndex: "_id",
-            render: (value: string, item: CategoryPopulate) => {
+            render: (value: string, item: Category) => {
               return (
                 <div className="flex items-center gap-2">
                   <CategoryFormWrapper
                     defaultValues={{
                       ...item,
-                      parentId: item.parentId
-                        ? typeof item.parentId === "string"
-                          ? item.parentId
-                          : item.parentId.parentId
-                        : null,
+                      parentId: item.parentId || null,
                     }}
                     afterClose={() => {}}
                   >

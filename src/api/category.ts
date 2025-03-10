@@ -18,8 +18,11 @@ type GetResponse = PaginationResponse<Category>;
 export const useCategory = (): SWRResponse => {
   const fetcher: BareFetcher<GetResponse> = (url: string) =>
     GET<GetResponse>(url);
-
-  const swr = useSWR<GetResponse>(`${API_ENDPOINT}/category`, fetcher, {});
+  const swr = useSWR<GetResponse>(`${API_ENDPOINT}/category`, fetcher, {
+    refreshInterval: 0,
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+  });
   return {
     ...swr,
     data: {

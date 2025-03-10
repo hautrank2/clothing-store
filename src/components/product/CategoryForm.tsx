@@ -55,7 +55,7 @@ export function CategoryFormWrapper({
 
   const categoryData =
     data?.items
-      .filter((e: Category) => e._id !== defaultValues?._id)
+      .filter((e: Category) => e._id !== defaultValues?._id && !e.parentId)
       .map((e: Category) => ({
         label: e.title,
         value: e._id,

@@ -1,13 +1,14 @@
 import { GET } from "~/lib/axios";
-import { Category, CategoryPopulate } from "~/models/category";
+import { Category } from "~/models/category";
+import { PaginationResponse } from "~/models/query";
 
-const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
+const ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export const categoryService = {
-  getAllProducts: async (): Promise<Category[]> => {
-    return GET(`${API_ENDPOINT}/category`);
+  getAll: async (): Promise<PaginationResponse<Category>> => {
+    return GET(`${ENDPOINT}/category`);
   },
 
-  getById: async (id: string): Promise<CategoryPopulate> => {
-    return GET<CategoryPopulate>(`/category/${id}`);
+  getById: async (id: string): Promise<Category> => {
+    return GET<Category>(`${ENDPOINT}/category/${id}`);
   },
 };

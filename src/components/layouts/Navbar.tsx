@@ -9,10 +9,10 @@ import {
   navigationMenuTriggerStyle,
 } from "~/components/ui/navigation-menu";
 import Link from "next/link";
-import { FAKE_CATEGORIES } from "~/data/category";
+import { categoryService } from "~/services/categoryService";
 
-function Navbar() {
-  const categoryData = FAKE_CATEGORIES;
+async function Navbar() {
+  const categoryData = await categoryService.getAll();
   const itemClassName = "bg-transparent";
   return (
     <NavigationMenu>
@@ -24,12 +24,11 @@ function Navbar() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-
         <NavigationMenuItem className={itemClassName}>
           <NavigationMenuTrigger>Products</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="nav-item nav-item-category m-6 flex gap-8">
-              {categoryData
+              {categoryData.items
                 .filter((cgr) => !cgr.parentId)
                 .map((cgr) => {
                   return (
@@ -40,7 +39,7 @@ function Navbar() {
                         </p>
                       </Link>
                       <ul className="nav-item-subcategory mt-2">
-                        {categoryData
+                        {categoryData.items
                           .filter((cgr2) => {
                             return cgr2.parentId === cgr._id;
                           })

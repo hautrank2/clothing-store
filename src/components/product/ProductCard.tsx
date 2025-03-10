@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { Product } from "~/models/product";
 import ColorBox from "../ui/color-box";
 
+const ASSET_PREFIX = process.env.NEXT_PUBLIC_ASSET_PREFIX;
 function ProductCard({ data }: { data: Product }) {
   const router = useRouter();
   const productByColor = data.colors;
@@ -15,7 +16,7 @@ function ProductCard({ data }: { data: Product }) {
   return (
     <div className="product-card rounded-lg p-4 border border-transparent hover:border-muted-foreground">
       <Image
-        src={pColor.imgUrls[0]}
+        src={ASSET_PREFIX + pColor.imgUrls[0]}
         alt="img-product"
         objectFit="cover"
         width={300}
