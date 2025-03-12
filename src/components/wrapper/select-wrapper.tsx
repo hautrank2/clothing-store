@@ -40,7 +40,6 @@ const SelectWrapper: FunctionComponent<IProp> = forwardRef(
           className={cn(value || "text-muted-foreground", classNames.trigger)}
           style={{ width }}
         >
-          {value ? "" : placeholder}
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
