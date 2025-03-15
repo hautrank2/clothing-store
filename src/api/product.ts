@@ -3,15 +3,38 @@ import { DELETE, GET, PATCH, POST } from "~/lib/axios";
 import { Product } from "~/models/product";
 import useSWRMutation, { SWRMutationResponse } from "swr/mutation";
 import { PaginationResponse } from "~/models/query";
+import { z } from "zod";
+
+export const productSizeSchema = z.union([
+  z.enum(["S", "M", "L", "XL", "XXL", "XXXL"]),
+  z.number(),
+]);
+
+export const productSchema = z.object({
+  code: z.string().min(1, "Product Code is required"),
+  title: z.string().min(1, "Product Name is required"),
+  price: z.number().min(0, "Invalid price"),
+  categoryId: z.string().min(1, "Please select a category"),
+  description: z.string().optional(),
+  colors: z
+    .array(
+      z.object({
+        color: z.string(),
+        hexCode: z.string(),
+        sizes: z.array(
+          z.object({
+            size: z.string(),
+            stock: z.number().min(0, "Stock must be at least 0"),
+          })
+        ),
+      })
+    )
+    .nonempty("At least one color variant is required"),
+});
+
+export type ProductFormValues = z.infer<typeof productSchema>;
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
-
-export type ProductPayload = {
-  image: File;
-  code: string;
-  title: string;
-  parentId?: string | null;
-};
 
 type GetResponse = PaginationResponse<Product>;
 
@@ -26,31 +49,37 @@ export const useProduct = (): SWRResponse => {
   return swr;
 };
 
+export const useProductByCode = ({ code }: { code: string }): SWRResponse => {
+  const fetcher: BareFetcher<Product> = (url: string) => GET<Product>(url);
+  const swr = useSWR<Product>(`${API_ENDPOINT}/product/${code}`, fetcher, {
+    refreshInterval: 0,
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+  });
+  return swr;
+};
+
 export const usePostProduct = (): SWRMutationResponse<
-  ProductPayload,
+  ProductFormValues,
   any,
   string,
-  ProductPayload
+  ProductFormValues
 > => {
-  const fetcher = (url: string, { arg }: { arg: ProductPayload }) =>
-    POST<any>(url, arg, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  const fetcher = (url: string, { arg }: { arg: ProductFormValues }) =>
+    POST<any>(url, arg);
   const swr = useSWRMutation(`${API_ENDPOINT}/Product`, fetcher);
   return swr;
 };
 
 export const usePatchProduct = (): SWRMutationResponse<
-  ProductPayload,
+  ProductFormValues,
   any,
   string,
-  { id: string; body: ProductPayload }
+  { id: string; body: ProductFormValues }
 > => {
   const fetcher = (
     url: string,
-    { arg }: { arg: { id: string; body: ProductPayload } }
+    { arg }: { arg: { id: string; body: ProductFormValues } }
   ) =>
     PATCH<any>(`${url}/${arg.id}`, arg.body, {
       headers: {
@@ -62,7 +91,7 @@ export const usePatchProduct = (): SWRMutationResponse<
 };
 
 export const useDeleteProduct = (): SWRMutationResponse<
-  ProductPayload,
+  ProductFormValues,
   any,
   string,
   string

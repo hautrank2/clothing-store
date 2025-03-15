@@ -1,19 +1,29 @@
-"use-client";
+"use client";
 
-import React, { ChangeEvent, ReactNode, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "./button";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { filesArrayToFileList } from "~/utils/file";
+import { fetchFile, filesArrayToFileList } from "~/utils/file";
 import Image from "next/image";
+import Spin from "./spin";
 
-interface FileUploadProps {
+interface Props {
   name?: string;
-  value?: FileList; // Files managed by React Hook Form
   onChange?: (files: FileList) => void; // Handler for file changes
   disabled?: boolean; // Disable input
   accept?: string; // Allowed file types
   max?: number;
+}
+
+interface FileUploadProps extends Props {
+  value?: FileList; // Files managed by React Hook Form
 }
 
 const FileUpload: React.FC<FileUploadProps> = React.forwardRef(
@@ -144,4 +154,29 @@ const ImageBox = ({
   );
 };
 
-export default FileUpload;
+interface __Props extends Props {
+  value: string; //File url
+}
+
+export const FileUploadPrepare = ({ value, ...props }: __Props) => {
+  const [fileList, setFileList] = useState<FileList>();
+
+  const fetchImage = () =>
+    fetchFile(value)
+      .then((value) => {
+        setFileList(filesArrayToFileList([value]));
+      })
+      .catch();
+
+  useEffect(() => {
+    fetchImage();
+  }, []);
+
+  return !fileList ? (
+    <Spin size={16} />
+  ) : (
+    <FileUpload value={fileList} {...props} />
+  );
+};
+
+export { FileUpload };

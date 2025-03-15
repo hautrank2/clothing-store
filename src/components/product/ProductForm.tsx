@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useForm,
-  useFieldArray,
-  Control,
-  FormProps,
-  UseFormReturn,
-} from "react-hook-form";
+import { useForm, useFieldArray, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -18,14 +12,13 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { ProductSizeStock } from "~/models/product";
+import { Product, ProductSizeStock } from "~/models/product";
 import { Category } from "~/models/category";
 import SelectWrapper from "../wrapper/select-wrapper";
 import { ColorPicker } from "../ui/color-picker";
-import { ReactNode, useState } from "react";
-import ModalWrapper from "../wrapper/modal-wrapper";
+import { ReactNode, useEffect, useState } from "react";
 import { Label } from "@radix-ui/react-label";
 import { X } from "lucide-react";
 import { Textarea } from "../ui/textarea";
@@ -39,44 +32,12 @@ import {
 } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useCategory } from "~/api/category";
-const productSchema = z.object({
-  code: z.string().min(1, "Product Code is required"),
-  title: z.string().min(1, "Product Name is required"),
-  price: z.number().min(0, "Invalid price"),
-  categoryId: z.string().min(1, "Please select a category"),
-  description: z.string().optional(),
-  colors: z
-    .array(
-      z.object({
-        color: z.enum([
-          "black",
-          "white",
-          "red",
-          "blue",
-          "green",
-          "yellow",
-          "purple",
-          "orange",
-          "brown",
-          "gray",
-        ]),
-        hexCode: z.string(),
-        imgUrls: z.array(z.string()).length(2, "Each color requires 2 images"),
-        sizes: z.array(
-          z.object({
-            size: z.union([
-              z.enum(["S", "M", "L", "XL", "XXL", "XXXL"]),
-              z.number(),
-            ]),
-            stock: z.number().min(0, "Stock must be at least 0"),
-          })
-        ),
-      })
-    )
-    .nonempty("At least one color variant is required"),
-});
-
-type ProductFormValues = z.infer<typeof productSchema>;
+import { hexColorToName } from "~/utils/color";
+import {
+  ProductFormValues,
+  productSchema,
+  usePostProduct,
+} from "~/api/product";
 
 const defaultSizeStock: ProductSizeStock = { size: "M", stock: 0 };
 
@@ -89,14 +50,22 @@ export interface ProductProps extends Props {
   defaultValues?: Category;
 }
 
-export function ProductFormWrapper({
-  afterClose,
-  defaultValues,
-  children,
-}: ProductProps) {
+export function ProductFormWrapper({ afterClose, children }: ProductProps) {
   const [open, setOpen] = useState(false);
 
   const { data } = useCategory();
+  const { trigger, isMutating } = usePostProduct();
+
+  const onSubmit = async (values: ProductFormValues) => {
+    try {
+      await trigger(values);
+      setOpen(false);
+      afterClose(true);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -109,7 +78,11 @@ export function ProductFormWrapper({
           <DialogTitle>Product</DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        {<ProductForm categories={data?.items || []} />}
+        <ProductForm
+          loading={isMutating}
+          onSubmit={onSubmit}
+          categories={data?.items || []}
+        />
       </DialogContent>
     </Dialog>
   );
@@ -117,17 +90,23 @@ export function ProductFormWrapper({
 
 export default function ProductForm({
   categories,
+  defaultValues,
+  onSubmit,
+  loading,
 }: {
   categories: Category[];
+  defaultValues?: Product;
+  onSubmit: (values: ProductFormValues) => void;
+  loading?: boolean;
 }) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
+    defaultValues: defaultValues || {
       colors: [],
     },
   });
 
-  const { control, handleSubmit } = form;
+  const { control, handleSubmit, setValue, getValues } = form;
 
   const {
     fields: colorFields,
@@ -138,13 +117,15 @@ export default function ProductForm({
     name: "colors",
   });
 
-  const onSubmit = (data: ProductFormValues) => {
-    console.log("Submitted Data:", data);
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        onChange={() => {
+          console.log(getValues());
+        }}
+        className="space-y-6"
+      >
         <div className="form-inputs max-h-[80vh] grid grid-cols-2 gap-4">
           <div className="col-span-1 h-full overflow-auto">
             {/* Product Code */}
@@ -185,7 +166,14 @@ export default function ProductForm({
                 <FormItem>
                   <FormLabel>Price</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Enter price" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Enter price"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(+e.target.value);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -241,7 +229,6 @@ export default function ProductForm({
                   addColor({
                     color: "black",
                     hexCode: "#000000",
-                    imgUrls: [],
                     sizes: [defaultSizeStock],
                   })
                 }
@@ -259,6 +246,7 @@ export default function ProductForm({
                   </TabsTrigger>
                 ))}
               </TabsList>
+
               {colorFields.map((color, index) => (
                 <TabsContent key={color.id} value={color.id}>
                   <Card>
@@ -266,12 +254,22 @@ export default function ProductForm({
                       <div className="flex justify-between">
                         <FormField
                           control={form.control}
-                          name={`colors.${index}.color`}
+                          name={`colors.${index}.hexCode`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Color</FormLabel>
+                              <FormLabel>Hex code</FormLabel>
                               <FormControl>
-                                <ColorPicker {...field} />
+                                <ColorPicker
+                                  {...field}
+                                  onChange={(e) => {
+                                    const hex = e.target.value;
+                                    setValue(
+                                      `colors.${index}.color`,
+                                      hexColorToName(hex)
+                                    );
+                                    field.onChange(e);
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -280,10 +278,10 @@ export default function ProductForm({
 
                         <FormField
                           control={form.control}
-                          name={`colors.${index}.hexCode`}
+                          name={`colors.${index}.color`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>HEX Code</FormLabel>
+                              <FormLabel>Color</FormLabel>
                               <FormControl>
                                 <Input
                                   placeholder="Enter HEX code"
@@ -320,7 +318,9 @@ export default function ProductForm({
           </div>
         </div>
 
-        <Button type="submit">Create Product</Button>
+        <Button type="submit" disabled={loading}>
+          Confirm
+        </Button>
       </form>
     </Form>
   );
@@ -376,12 +376,19 @@ const SizeStockForm = ({
                           {...field}
                           placeholder="Enter stock"
                           min={0}
+                          onChange={(e) => {
+                            form.setValue(
+                              `colors.${colorIndex}.sizes.${index}.stock`,
+                              +e.target.value
+                            );
+                          }}
                         />
                       </FormControl>
                     </FormItem>
                   );
                 }}
               />
+
               <Button
                 size={"sm"}
                 variant={"ghost"}

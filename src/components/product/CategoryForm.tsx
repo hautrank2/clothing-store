@@ -15,7 +15,7 @@ import {
 import { z } from "zod";
 import { Input } from "../ui/input";
 import ModalWrapper from "../wrapper/modal-wrapper";
-import FileUpload from "../ui/upload";
+import { FileUpload } from "../ui/upload";
 import SelectWrapper from "../wrapper/select-wrapper";
 import { Category } from "~/models/category";
 import { Option } from "~/models/common";
@@ -74,15 +74,7 @@ export function CategoryFormWrapper({
 
     try {
       if (!isEdit) {
-        const image = values.imgs[0];
-        await trigger({
-          image,
-          code: values.code,
-          title: values.title,
-          parentId: values.parentId,
-        });
-        setOpen(false);
-        afterClose(true);
+
       } else {
         const image = values.imgs[0];
         await triggerPatch({
@@ -159,7 +151,6 @@ const PrepareForm = ({
     return <div>Loading...</div>;
   }
 
-  console.log("prepare", defaultValues);
   return React.Children.map(children, (child) => {
     if (React.isValidElement<{ defaultValues: CategoryFormValues }>(child)) {
       return React.cloneElement(child, {

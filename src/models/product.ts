@@ -14,13 +14,20 @@ export type Color =
 
 export type ProductSize = "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | number;
 
+export const PRODUCT_SIZES = ["S", "M", "L", "XL", "XXL", "XXXL"];
+
+export const validSize = (size: string | number) => {
+  if (typeof size === "number") return true;
+  return PRODUCT_SIZES.includes(size);
+};
+
 export interface ProductSizeStock {
-  size: ProductSize; // Kích thước có thể là chữ hoặc số
+  size: string; // Kích thước có thể là chữ hoặc số
   stock: number; // Số lượng tồn kho
 }
 
 export interface ProductColor {
-  color: Color; // Màu sắc
+  color: string; // Màu sắc
   hexCode: string; // Mã màu HEX
   imgUrls: string[]; // 2 ảnh cho từng màu
   sizes: ProductSizeStock[]; // Danh sách size và stock

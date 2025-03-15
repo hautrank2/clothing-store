@@ -1,6 +1,7 @@
 "use client";
 
-import { Edit2 } from "lucide-react";
+import { Edit2, Images } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import { useProduct } from "~/api/product";
 import { ProductFormWrapper } from "~/components/product/ProductForm";
@@ -64,14 +65,12 @@ function ProductPage({}) {
             render: (value: string, item: Product) => {
               return (
                 <div className="flex items-center gap-2">
-                  <ProductFormWrapper
-                    defaultValues={{
-                      ...item,
-                    }}
-                    afterClose={() => {}}
-                  >
-                    <Edit2 size={16} />
-                  </ProductFormWrapper>
+                  <Link href={`./product/${item.code}`}>
+                    <Edit2 />
+                  </Link>
+                  <Link href={`./product/${item.code}/images`}>
+                    <Images />
+                  </Link>
                 </div>
               );
             },
