@@ -4,8 +4,10 @@ import { PaginationResponse } from "~/models/query";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export const categoryService = {
-  getAll: async (): Promise<PaginationResponse<Category>> => {
-    return GET(`${ENDPOINT}/category`);
+  getAll: async (
+    params?: Record<string, any>
+  ): Promise<PaginationResponse<Category>> => {
+    return GET(`${ENDPOINT}/category`, { params });
   },
 
   getById: async (id: string): Promise<Category> => {

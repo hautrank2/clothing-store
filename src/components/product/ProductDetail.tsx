@@ -30,8 +30,8 @@ function ProductDetail({ productData }: { productData: Product }) {
   }, [selectedColor]);
 
   return (
-    <div id="productDetail" className="grid grid-cols-2 gap-8">
-      <div className="col-span-1">
+    <div id="productDetail" className="grid grid-cols-3 gap-8">
+      <div className="col-span-2">
         <div className="flex gap-4">
           <div className="img-list flex flex-col gap-4">
             {imgs.map((img, index) => {
@@ -54,13 +54,13 @@ function ProductDetail({ productData }: { productData: Product }) {
           <Image
             src={imgs[selectedImg]}
             alt={imgs[selectedImg]}
-            width={400}
-            height={400}
+            width={600}
+            height={600}
           />
         </div>
       </div>
       <div className="col-span-1">
-        <h2>{productData.title}</h2>
+        <h4 className="font-semibold">{productData.title}</h4>
 
         <section className="py-4">
           <h5 className="mb-2">Colour</h5>
@@ -93,7 +93,10 @@ function ProductDetail({ productData }: { productData: Product }) {
           </div>
           {
             <small
-              className={selectedSize && selectedColor ? "block" : "opacity-0"}
+              className={cn(
+                "mt-2",
+                selectedSize && selectedColor ? "block" : "opacity-0"
+              )}
             >{`${_variant?.stock || 0} products left`}</small>
           }
         </section>

@@ -105,7 +105,7 @@ export default function ProductForm({
     },
   });
 
-  const { control, handleSubmit, setValue, getValues } = form;
+  const { control, handleSubmit, setValue } = form;
 
   const {
     fields: colorFields,
@@ -118,15 +118,9 @@ export default function ProductForm({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        onChange={() => {
-          console.log(getValues());
-        }}
-        className="space-y-6"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="form-inputs max-h-[80vh] grid grid-cols-2 gap-4">
-          <div className="col-span-1 h-full overflow-auto">
+          <div className="col-span-1 h-full overflow-auto p-2">
             {/* Product Code */}
             <FormField
               control={form.control}
@@ -217,7 +211,7 @@ export default function ProductForm({
           </div>
 
           {/* Colors & Sizes */}
-          <div className="col-span-1 space-y-4 h-full overflow-auto">
+          <div className="col-span-1 space-y-4 h-full overflow-auto p-2">
             <div className="flex items-center gap-4">
               <FormLabel className="text-xl font-semibold">
                 Colors & Sizes

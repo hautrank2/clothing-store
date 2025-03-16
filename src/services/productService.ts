@@ -4,11 +4,23 @@ import { PaginationResponse } from "~/models/query";
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export const productService = {
-  getAll: async (): Promise<PaginationResponse<Product>> => {
-    return GET<PaginationResponse<Product>>(`${API_ENDPOINT}/product`);
+  getAll: async (params?: any): Promise<PaginationResponse<Product>> => {
+    return GET<PaginationResponse<Product>>(`${API_ENDPOINT}/product`, {
+      params,
+    });
   },
 
-  getById: async (id: string): Promise<Product> => {
-    return GET<Product>(`${API_ENDPOINT}/product/${id}`);
+  getByCode: async (code: string): Promise<Product> => {
+    return GET<Product>(`${API_ENDPOINT}/product/${code}`);
+  },
+
+  getByCategoryCode: async (
+    code: string,
+    params?: any
+  ): Promise<PaginationResponse<Product>> => {
+    return GET<PaginationResponse<Product>>(
+      `${API_ENDPOINT}/product/categoryCode/${code}`,
+      { params }
+    );
   },
 };

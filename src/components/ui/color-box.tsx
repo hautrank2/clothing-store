@@ -12,10 +12,10 @@ const ColorBox = React.forwardRef<HTMLDivElement, ColorBoxProps>(
       <div
         ref={ref}
         className={cn(
-          "color-box h-6 w-6 border rounded-full",
+          "color-box h-10 w-10 border rounded-full border-2",
           active
-            ? "border-foreground"
-            : "border-muted hover:border-foreground hover:pointer hover:cursor-pointer",
+            ? "border-border"
+            : "border-border/40 hover:border-foreground hover:pointer hover:cursor-pointer",
           className
         )}
         style={{ backgroundColor: color }}

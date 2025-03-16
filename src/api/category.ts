@@ -15,14 +15,23 @@ export type CategoryPayload = {
 
 type GetResponse = PaginationResponse<Category>;
 
-export const useCategory = (): SWRResponse => {
+export const useCategory = (
+  searchParams?: Record<string, any>,
+  options?: Record<string, any>
+): SWRResponse => {
   const fetcher: BareFetcher<GetResponse> = (url: string) =>
     GET<GetResponse>(url);
-  const swr = useSWR<GetResponse>(`${API_ENDPOINT}/category`, fetcher, {
-    refreshInterval: 0,
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-  });
+  const swr = useSWR<GetResponse>(
+    `${API_ENDPOINT}/category` +
+      (searchParams ? `?${new URLSearchParams(searchParams).toString()}` : ""),
+    fetcher,
+    {
+      refreshInterval: 0,
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      ...(options || {}),
+    }
+  );
   return {
     ...swr,
     data: {

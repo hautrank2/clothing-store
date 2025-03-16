@@ -8,10 +8,15 @@ import { useCategory } from "~/api/category";
 import { Category } from "~/models/category";
 import { CategorDelete } from "~/components/product/CategoryDelete";
 import { Edit2, Trash } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 function CategoryPage() {
-  const { data, isLoading: loading } = useCategory();
-
+  const searchParams = useSearchParams();
+  const page = searchParams.get("page") || 1;
+  const pageSize = searchParams.get("pageSize") || 10;
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data, isLoading: loading } = useCategory({ page, pageSize });
   return (
     <div className="mt-4">
       <div className="flex">
@@ -30,6 +35,13 @@ function CategoryPage() {
             totalCount: data.total,
             totalPage: data.totalPage,
           }
+        }
+        onChangePage={(page) =>
+          router.push(
+            pathname +
+              "?" +
+              new URLSearchParams({ page: page.toString() }).toString()
+          )
         }
         columns={[
           { title: "Code", dataIndex: "code" },

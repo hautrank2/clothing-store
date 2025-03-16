@@ -11,7 +11,7 @@ type Props = {
 async function CategoryPage({ params }: Props) {
   const _params = await params;
   const category = await categoryService.getById(_params.code as string);
-  const productData = await productService.getAll();
+  const products = await productService.getAll({ categoryId: category._id });
   return (
     <div id="categoryPage">
       <Header />
@@ -30,13 +30,19 @@ async function CategoryPage({ params }: Props) {
           )}
         </ol>
         <div className="grid grid-cols-4 w-full mt-4">
-          {productData.items?.map((prod, index) => {
-            return (
-              <div key={prod.title + index} className="col-span-1">
-                <ProductCard data={prod} />
-              </div>
-            );
-          })}
+          {products && products.items.length > 0 ? (
+            products.items?.map((prod, index) => {
+              return (
+                <div key={prod.title + index} className="col-span-1">
+                  <ProductCard data={prod} />
+                </div>
+              );
+            })
+          ) : (
+            <div>
+              <h5>Product not found</h5>
+            </div>
+          )}
         </div>
       </div>
     </div>

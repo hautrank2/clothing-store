@@ -44,8 +44,8 @@ export function PaginationWarpper({
   onPageChange,
   className,
 }: PaginationProps) {
-  const isFirstPage = pageIndex === 0;
-  const isLastPage = pageIndex === totalPage - 1;
+  const isFirstPage = pageIndex === 1;
+  const isLastPage = pageIndex === totalPage;
 
   const pages = generatePageNumbers(pageIndex, totalPage);
   const classNameHover =
@@ -60,7 +60,7 @@ export function PaginationWarpper({
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              if (pageIndex > 0) onPageChange(pageIndex - 1);
+              if (pageIndex > 1) onPageChange(pageIndex);
             }}
             className={isFirstPage ? classNameHover : ""}
           >
@@ -80,10 +80,10 @@ export function PaginationWarpper({
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    onPageChange(page - 1); // Convert back to 0-based index
+                    onPageChange(page); // Convert back to 0-based index
                   }}
-                  isActive={pageIndex + 1 === page}
-                  className={page === pageIndex + 1 ? "active" : ""}
+                  isActive={pageIndex === page}
+                  className={page === pageIndex ? "active" : ""}
                 >
                   {page}
                 </PaginationLink>
@@ -92,7 +92,7 @@ export function PaginationWarpper({
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    let newPage = pageIndex + 1;
+                    let newPage = pageIndex;
                     if (ellipsisLeft) {
                       newPage = newPage - 5 < 1 ? 1 : newPage - 5;
                     }
@@ -101,7 +101,7 @@ export function PaginationWarpper({
                         newPage + 5 > totalPage ? totalPage : newPage + 5;
                     }
                     console.log(newPage);
-                    onPageChange(newPage - 1); // Convert back to 0-based index
+                    onPageChange(newPage); // Convert back to 0-based index
                   }}
                 >
                   <PaginationEllipsis />
@@ -117,7 +117,7 @@ export function PaginationWarpper({
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              if (pageIndex < totalPage - 1) onPageChange(pageIndex + 1);
+              if (pageIndex < totalPage) onPageChange(pageIndex);
             }}
             className={isLastPage ? classNameHover : ""}
           >

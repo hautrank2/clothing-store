@@ -1,9 +1,10 @@
 import React, { Fragment } from "react";
 import Header from "~/components/layouts/Header";
 import ProductDetail from "~/components/product/ProductDetail";
-import { FAKE_CATEGORIES } from "~/data/category";
-import { FAKE_PRODUCTS } from "~/data/product";
 import { Category } from "~/models/category";
+import { categoryService } from "~/services/categoryService";
+import { productService } from "~/services/productService";
+import { hanldeProduct } from "~/utils/product";
 
 type Props = {
   params: Promise<{ product: string }>;
@@ -25,18 +26,19 @@ const findParent = (categories: Category[], category: Category): Category[] => {
 async function ProductPage({ params }: Props) {
   const { product: productCode } = await params;
 
-  const product = FAKE_PRODUCTS.find((p) => p.code === productCode);
+  const rawProduct = await productService.getByCode(productCode);
+  const product = hanldeProduct(rawProduct);
 
   if (!product) {
     return <h1>Not found product</h1>;
   }
 
-  const categories = FAKE_CATEGORIES;
-  const category = categories.find((e) => e._id === product?.categoryId);
+  const categories = await categoryService.getAll();
+  const category = categories.items?.find((e) => e._id === product?.categoryId);
 
   // Find parent
   const parentCategory = category
-    ? findParent(categories, category).reverse()
+    ? findParent(categories.items, category).reverse()
     : [];
 
   console.log(product);
