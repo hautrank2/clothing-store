@@ -2,7 +2,6 @@
 
 import { useForm, useFieldArray, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Form,
   FormField,
@@ -18,7 +17,7 @@ import { Product, ProductSizeStock } from "~/models/product";
 import { Category } from "~/models/category";
 import SelectWrapper from "../wrapper/select-wrapper";
 import { ColorPicker } from "../ui/color-picker";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Label } from "@radix-ui/react-label";
 import { X } from "lucide-react";
 import { Textarea } from "../ui/textarea";

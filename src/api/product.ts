@@ -4,6 +4,7 @@ import { Product } from "~/models/product";
 import useSWRMutation, { SWRMutationResponse } from "swr/mutation";
 import { PaginationResponse } from "~/models/query";
 import { z } from "zod";
+import { hanldeProduct } from "~/utils/product";
 
 export const productSizeSchema = z.union([
   z.enum(["S", "M", "L", "XL", "XXL", "XXXL"]),
@@ -46,7 +47,13 @@ export const useProduct = (): SWRResponse => {
     revalidateIfStale: false,
     revalidateOnFocus: false,
   });
-  return swr;
+  return {
+    ...swr,
+    data: {
+      ...swr.data,
+      items: swr.data?.items.map(hanldeProduct) || [],
+    },
+  };
 };
 
 export const useProductByCode = ({ code }: { code: string }): SWRResponse => {
@@ -56,7 +63,10 @@ export const useProductByCode = ({ code }: { code: string }): SWRResponse => {
     revalidateIfStale: false,
     revalidateOnFocus: false,
   });
-  return swr;
+  return {
+    ...swr,
+    data: swr.data && hanldeProduct(swr.data),
+  };
 };
 
 export const usePostProduct = (): SWRMutationResponse<
@@ -67,7 +77,37 @@ export const usePostProduct = (): SWRMutationResponse<
 > => {
   const fetcher = (url: string, { arg }: { arg: ProductFormValues }) =>
     POST<any>(url, arg);
-  const swr = useSWRMutation(`${API_ENDPOINT}/Product`, fetcher);
+  const swr = useSWRMutation(`${API_ENDPOINT}/product`, fetcher);
+  return swr;
+};
+
+type ProductImgFormValues = {
+  id: string;
+  imgIndex: number;
+  colorIndex: number;
+  image: File;
+};
+
+export const usePostUploadProductImg = (): SWRMutationResponse<
+  Product,
+  any,
+  string,
+  ProductImgFormValues
+> => {
+  const fetcher = (url: string, { arg }: { arg: ProductImgFormValues }) => {
+    const { id, image, ...rest } = arg;
+    const params = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(rest).map(([key, value]) => [key, String(value)])
+      )
+    );
+    return POST<any>(
+      `${url}/${id}/uploadImg?${params.toString()}`,
+      { image },
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+  };
+  const swr = useSWRMutation(`${API_ENDPOINT}/product`, fetcher);
   return swr;
 };
 
@@ -80,13 +120,8 @@ export const usePatchProduct = (): SWRMutationResponse<
   const fetcher = (
     url: string,
     { arg }: { arg: { id: string; body: ProductFormValues } }
-  ) =>
-    PATCH<any>(`${url}/${arg.id}`, arg.body, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-  const swr = useSWRMutation(`${API_ENDPOINT}/Product`, fetcher);
+  ) => PATCH<any>(`${url}/${arg.id}`, arg.body);
+  const swr = useSWRMutation(`${API_ENDPOINT}/product`, fetcher);
   return swr;
 };
 

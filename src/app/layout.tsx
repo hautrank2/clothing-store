@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import "../styles/main.scss";
+import { Toaster } from "~/components/ui/sonner";
 
 const sans = Nunito({
   variable: "--font-geist-sans",
@@ -20,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sans.variable} antialiased h-screen`} >{children}</body>
+      <body className={`${sans.variable} antialiased h-screen`}>
+        {children}
+        <Toaster closeButton />
+      </body>
     </html>
   );
 }

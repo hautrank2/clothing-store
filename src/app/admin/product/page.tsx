@@ -1,9 +1,10 @@
 "use client";
 
-import { Edit2, Images } from "lucide-react";
+import { Edit2, Images, Trash } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useProduct } from "~/api/product";
+import { ProductDelete } from "~/components/product/ProductDelete";
 import { ProductFormWrapper } from "~/components/product/ProductForm";
 import { Button } from "~/components/ui/button";
 import TableWrapper from "~/components/wrapper/table-wrapper";
@@ -64,13 +65,16 @@ function ProductPage({}) {
             dataIndex: "_id",
             render: (value: string, item: Product) => {
               return (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                   <Link href={`./product/${item.code}`}>
-                    <Edit2 />
+                    <Edit2 size={16} />
                   </Link>
                   <Link href={`./product/${item.code}/images`}>
-                    <Images />
+                    <Images size={16} />
                   </Link>
+                  <ProductDelete productId={value}>
+                    <Trash size={16} />
+                  </ProductDelete>
                 </div>
               );
             },

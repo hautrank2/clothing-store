@@ -74,7 +74,15 @@ export function CategoryFormWrapper({
 
     try {
       if (!isEdit) {
-
+        const image = values.imgs[0];
+        await trigger({
+          image,
+          code: values.code,
+          title: values.title,
+          parentId: values.parentId,
+        });
+        setOpen(false);
+        afterClose(true);
       } else {
         const image = values.imgs[0];
         await triggerPatch({
