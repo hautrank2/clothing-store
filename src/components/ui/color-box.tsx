@@ -15,7 +15,7 @@ const ColorBox = React.forwardRef<HTMLDivElement, ColorBoxProps>(
           "color-box h-10 w-10 border rounded-full border-2",
           active
             ? "border-border"
-            : "border-border/40 hover:border-foreground hover:pointer hover:cursor-pointer",
+            : "border-border/20 hover:border-foreground hover:pointer hover:cursor-pointer",
           className
         )}
         style={{ backgroundColor: color }}

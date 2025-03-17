@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sans.variable} antialiased h-screen`}>
+      <body className={`${sans.variable} antialiased`}>
         {children}
         <Toaster closeButton />
       </body>

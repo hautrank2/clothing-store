@@ -34,7 +34,7 @@ async function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Header />
-      <SidebarProvider>
+      <SidebarProvider className="min-h-auto">
         <Sidebar className="top-16">
           <SidebarContent>
             <SidebarGroup />
