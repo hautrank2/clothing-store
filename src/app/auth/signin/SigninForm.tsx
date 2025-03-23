@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { signIn } from "next-auth/react";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -19,24 +19,34 @@ import Link from "next/link";
 import Image from "next/image";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Email không hợp lệ" }),
+  username: z.string(),
   password: z.string().min(6, { message: "Mật khẩu tối thiểu 6 ký tự" }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function SigninForm() {
+export default function SigninForm({ prePathname }: { prePathname: string }) {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
-
   const onSubmit = (data: LoginFormValues) => {
-    console.log("Login data:", data);
-    // Gọi API hoặc xử lý logic đăng nhập ở đây
+    signIn("credentials", {
+      ...data,
+      callbackUrl: prePathname,
+    });
+  };
+
+  const onSigninByGoogle = () => {
+    console.log("prePathname", prePathname);
+    try {
+      signIn("google", { callbackUrl: prePathname });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -49,16 +59,12 @@ export default function SigninForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="you@example.com"
-                      {...field}
-                    />
+                    <Input placeholder="hautrank2" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -80,7 +86,7 @@ export default function SigninForm() {
             />
 
             <Button type="submit" className="w-full">
-              Đăng nhập
+              Sign In
             </Button>
           </form>
         </Form>
@@ -92,14 +98,18 @@ export default function SigninForm() {
             Create a new account ?
           </Link>
         </div>
-        <Button variant={"outline"} className="w-full mt-4">
+        <Button
+          variant={"outline"}
+          className="w-full mt-4"
+          onClick={onSigninByGoogle}
+        >
           <Image
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png"
             alt="google icon"
             width={20}
             height={20}
           />
-          Sign in
+          Sign in by Google
         </Button>
       </CardContent>
     </Card>

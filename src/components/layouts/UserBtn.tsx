@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 function UserBtn({ session }: { session: Session | null }) {
   const [user, setUser] = useState();
@@ -26,18 +27,16 @@ function UserBtn({ session }: { session: Session | null }) {
   }, []);
 
   const onLogout = () => {
-    console.log("on logout");
+    signOut({ callbackUrl: "/" });
   };
   return session ? (
-    <p>
-      <ExistButton onLogout={onLogout}>
-        <div className="flex items-center gap-2 hover:text-semibold hover:cursor-pointer">
-          <User />
-          {session.user?.name || session.user?.username}
-          <ChevronDown />
-        </div>
-      </ExistButton>
-    </p>
+    <ExistButton onLogout={onLogout}>
+      <div className="flex items-center gap-2 hover:text-semibold hover:cursor-pointer">
+        <User />
+        {session.user?.name || session.user?.username}
+        <ChevronDown />
+      </div>
+    </ExistButton>
   ) : (
     <Link href={user ? "/profile" : "/auth/signin"}>
       <Button size={"icon"} variant={"link"}>
@@ -63,7 +62,7 @@ const ExistButton = ({
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push('/auth/profile')}>
+          <DropdownMenuItem onClick={() => router.push("/auth/profile")}>
             <User />
             <span>Profile</span>
           </DropdownMenuItem>

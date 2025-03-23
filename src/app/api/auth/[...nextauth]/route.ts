@@ -1,16 +1,41 @@
 import { JWT } from "next-auth/jwt";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialPovider from "next-auth/providers/credentials";
 import { decrypt, encrypt } from "~/lib/session";
 import { userService } from "~/services/userService";
 import { IUser } from "~/types/user";
+import axiosClient from "~/lib/axios";
 
 const MAX_AGE = +(process.env.NEXTAUTH_MAXAGE || 10);
+const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || "";
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
+    CredentialPovider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Name", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        const res = await axiosClient.post(`${API_ENDPOINT}/auth/signin`, {
+          username: credentials?.username,
+          password: credentials?.password,
+        });
+        const userData = await res.data;
+        console.log("user", userData);
+
+        // If no error and we have user data, return it
+        if (userData) {
+          return userData.user;
+        }
+        // Return null if user data could not be retrieved
+        return null;
+      },
     }),
   ],
   session: {

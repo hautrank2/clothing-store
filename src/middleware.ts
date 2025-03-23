@@ -5,9 +5,10 @@ export const middleware = (request: NextRequest) => {
   const referer = headers.get("referer");
   const proto = headers.get("x-forwarded-proto");
   const host = headers.get("host");
-  const domain = `${proto}://${host}`;
-  const path = referer?.substring(domain.length);
-  headers.set("path", path || '');
+  const authority = `${proto}://${host}`;
+  const path = referer?.substring(authority.length);
+  headers.set("authority", authority || "");
+  headers.set("path", path || "");
   const response = NextResponse.next({
     request: {
       headers,
