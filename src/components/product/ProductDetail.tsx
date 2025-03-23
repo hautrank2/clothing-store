@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { cn } from "~/lib/utils";
-import { Product } from "~/models/product";
+import { Product } from "~/types/product";
 import ColorBox from "../ui/color-box";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { Button } from "../ui/button";

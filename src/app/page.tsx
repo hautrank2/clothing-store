@@ -5,7 +5,7 @@ import Image from "next/image";
 import { cn } from "~/lib/utils";
 import Header from "~/components/layouts/Header";
 
-export default function Home() {
+export default async function Home() {
   const data = {
     landingImgs: [
       "/img/6354957.jpg",
@@ -18,7 +18,7 @@ export default function Home() {
   const { categories } = data;
 
   return (
-    <div id="homePage" className="home-page h-screen overflow-auto">
+    <div id="homePage" className="home-page overflow-auto pt-16">
       <Header />
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start mt-4">
         <section

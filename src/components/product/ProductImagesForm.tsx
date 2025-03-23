@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "~/models/product";
+import { Product } from "~/types/product";
 import Image from "next/image";
 import { ImagePlus, Upload } from "lucide-react";
 import ColorBox from "../ui/color-box";

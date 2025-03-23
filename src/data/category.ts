@@ -1,4 +1,4 @@
-import { Category } from "~/models/category";
+import { Category } from "~/types/category";
 
 export const FAKE_CATEGORIES: Category[] = [
   {

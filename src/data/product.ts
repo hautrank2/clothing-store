@@ -1,3 +1,3 @@
-import { Product } from "~/models/product";
+import { Product } from "~/types/product";
 
 export const FAKE_PRODUCTS: Product[] = [];

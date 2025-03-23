@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Header from "~/components/layouts/Header";
 import ProductDetail from "~/components/product/ProductDetail";
-import { Category } from "~/models/category";
+import { Category } from "~/types/category";
 import { categoryService } from "~/services/categoryService";
 import { productService } from "~/services/productService";
 import { hanldeProduct } from "~/utils/product";

@@ -5,7 +5,7 @@ import { CategoryFormWrapper } from "~/components/product/CategoryForm";
 import { Button } from "~/components/ui/button";
 import TableWrapper from "~/components/wrapper/table-wrapper";
 import { useCategory } from "~/api/category";
-import { Category } from "~/models/category";
+import { Category } from "~/types/category";
 import { CategorDelete } from "~/components/product/CategoryDelete";
 import { Edit2, Trash } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";

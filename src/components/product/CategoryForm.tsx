@@ -17,8 +17,8 @@ import { Input } from "../ui/input";
 import ModalWrapper from "../wrapper/modal-wrapper";
 import { FileUpload } from "../ui/upload";
 import SelectWrapper from "../wrapper/select-wrapper";
-import { Category } from "~/models/category";
-import { Option } from "~/models/common";
+import { Category } from "~/types/category";
+import { Option } from "~/types/common";
 import { useCategory, usePatchCategory, usePostCategory } from "~/api/category";
 import { fetchFile, filesArrayToFileList } from "~/utils/file";
 

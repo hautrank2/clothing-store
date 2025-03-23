@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
-import { Option } from "~/models/common";
+import { Option } from "~/types/common";
 
 interface IProp {
   options?: Option[] | [];

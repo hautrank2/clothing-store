@@ -1,6 +1,6 @@
 import { GET } from "~/lib/axios";
-import { Category } from "~/models/category";
-import { PaginationResponse } from "~/models/query";
+import { Category } from "~/types/category";
+import { PaginationResponse } from "~/types/query";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export const categoryService = {

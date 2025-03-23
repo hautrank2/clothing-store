@@ -1,22 +1,25 @@
 import React from "react";
 import Navbar from "./Navbar";
 import { Button } from "../ui/button";
-import { ShoppingBag, User } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
+import UserBtn from "./UserBtn";
+import { getServerSession } from "next-auth";
+import { authOptions } from "~/app/api/auth/[...nextauth]/route";
 
 async function Header() {
+  const session = await getServerSession(authOptions);
+
   return (
-    <header className="flex justify-between items-center sticky top-0 h-16 px-16 border-b z-20 bg-background/90">
+    <header className="flex justify-between items-center w-full fixed top-0 h-16 px-16 border-b z-20 bg-background/90">
       <div className="header-branch">
         <h4 className="font-bold">Hautrank2</h4>
       </div>
       <div className="header-search px-16">
         <Navbar />
       </div>
-      <div className="header-extra flex items-center space-x-1">
-        <Button size={"icon"} variant={"ghost"}>
-          <User />
-        </Button>
+      <div className="header-extra flex items-center gap-4">
+        <UserBtn session={session} />
         <Button size={"icon"} variant={"ghost"}>
           <ShoppingBag />
         </Button>

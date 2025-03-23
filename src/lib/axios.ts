@@ -101,3 +101,5 @@ export const DELETE = async <T>(
   const response = await axiosClient.delete<T>(url, options);
   return response.data;
 };
+
+export default axiosClient;

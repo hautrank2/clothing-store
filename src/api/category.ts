@@ -1,8 +1,8 @@
 import useSWR, { BareFetcher, SWRResponse } from "swr";
 import { DELETE, GET, PATCH, POST } from "~/lib/axios";
-import { Category } from "~/models/category";
+import { Category } from "~/types/category";
 import useSWRMutation, { SWRMutationResponse } from "swr/mutation";
-import { PaginationResponse } from "~/models/query";
+import { PaginationResponse } from "~/types/query";
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 

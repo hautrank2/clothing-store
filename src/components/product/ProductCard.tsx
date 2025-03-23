@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { Product } from "~/models/product";
+import { Product } from "~/types/product";
 import ColorBox from "../ui/color-box";
 import { cn } from "~/lib/utils";
 

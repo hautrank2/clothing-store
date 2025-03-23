@@ -13,8 +13,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { Product, ProductSizeStock } from "~/models/product";
-import { Category } from "~/models/category";
+import { Product, ProductSizeStock } from "~/types/product";
+import { Category } from "~/types/category";
 import SelectWrapper from "../wrapper/select-wrapper";
 import { ColorPicker } from "../ui/color-picker";
 import { ReactNode, useState } from "react";

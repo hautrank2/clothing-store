@@ -8,7 +8,7 @@ import { ProductDelete } from "~/components/product/ProductDelete";
 import { ProductFormWrapper } from "~/components/product/ProductForm";
 import { Button } from "~/components/ui/button";
 import TableWrapper from "~/components/wrapper/table-wrapper";
-import { Product } from "~/models/product";
+import { Product } from "~/types/product";
 
 function ProductPage({}) {
   const { data, isLoading: loading } = useProduct();

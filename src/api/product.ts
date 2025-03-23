@@ -1,8 +1,8 @@
 import useSWR, { BareFetcher, SWRResponse } from "swr";
 import { DELETE, GET, PATCH, POST } from "~/lib/axios";
-import { Product } from "~/models/product";
+import { Product } from "~/types/product";
 import useSWRMutation, { SWRMutationResponse } from "swr/mutation";
-import { PaginationResponse } from "~/models/query";
+import { PaginationResponse } from "~/types/query";
 import { z } from "zod";
 import { hanldeProduct } from "~/utils/product";
 
