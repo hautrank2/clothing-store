@@ -22,19 +22,17 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const res = await axiosClient.post(`${API_ENDPOINT}/auth/signin`, {
-          username: credentials?.username,
-          password: credentials?.password,
-        });
-        const userData = await res.data;
-        console.log("user", userData);
-
-        // If no error and we have user data, return it
-        if (userData) {
+        try {
+          const res = await axiosClient.post(`${API_ENDPOINT}/auth/signin`, {
+            username: credentials?.username,
+            password: credentials?.password,
+          });
+          const userData = await res.data;
+          console.log("user", userData);
           return userData.user;
+        } catch {
+          throw new Error("Username or password incorret!");
         }
-        // Return null if user data could not be retrieved
-        return null;
       },
     }),
   ],

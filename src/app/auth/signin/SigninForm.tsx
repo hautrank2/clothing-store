@@ -17,6 +17,7 @@ import {
 } from "~/components/ui/form";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 
 const loginSchema = z.object({
   username: z.string(),
@@ -26,6 +27,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function SigninForm({ prePathname }: { prePathname: string }) {
+  const [loading, setLoading] = useState(false);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -33,26 +35,35 @@ export default function SigninForm({ prePathname }: { prePathname: string }) {
       password: "",
     },
   });
-  const onSubmit = (data: LoginFormValues) => {
-    signIn("credentials", {
-      ...data,
-      callbackUrl: prePathname,
-    });
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      const api = await signIn("credentials", {
+        ...data,
+        callbackUrl: prePathname,
+      });
+      console.log(api);
+    } catch {}
   };
 
   const onSigninByGoogle = () => {
     console.log("prePathname", prePathname);
     try {
+      setLoading(true);
       signIn("google", { callbackUrl: prePathname });
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const commonProps = {
+    disabled: loading,
+  };
   return (
     <Card className="max-w-md shadow-lg m-auto min-w-[30rem]">
       <CardHeader>
-        <CardTitle className="text-2xl">Đăng nhập</CardTitle>
+        <CardTitle className="text-2xl">Sign in</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -64,7 +75,11 @@ export default function SigninForm({ prePathname }: { prePathname: string }) {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="hautrank2" {...field} />
+                    <Input
+                      {...commonProps}
+                      placeholder="hautrank2"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -76,16 +91,21 @@ export default function SigninForm({ prePathname }: { prePathname: string }) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mật khẩu</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input
+                      {...commonProps}
+                      type="password"
+                      placeholder="••••••••"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full">
+            <Button {...commonProps} type="submit" className="w-full">
               Sign In
             </Button>
           </form>
