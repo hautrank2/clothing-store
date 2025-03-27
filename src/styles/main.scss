@@ -18,20 +18,20 @@ h3 {
 
 h4 {
   font-size: 1.25rem; /* 24px */
-  line-height: 1.2;
+  line-height: 1.8;
   font-weight: 500;
 }
 
 h5 {
   font-size: 1rem; /* 20px */
-  line-height: 1.2; /* 28px */
+  line-height: 1.6; /* 28px */
   font-weight: 500;
 }
 
 /* Paragraph */
 p {
   font-size: 1rem; /* 16px */
-  line-height: 1.1; /* 28px */
+  line-height: 1.4; /* 28px */
   color: #1c1b1d; /* Body text color */
 }
 
@@ -48,7 +48,6 @@ blockquote {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px;
 }
 
 @media (max-width: 1024px) {

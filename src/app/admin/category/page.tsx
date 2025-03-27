@@ -18,7 +18,7 @@ function CategoryPage() {
   const pathname = usePathname();
   const { data, isLoading: loading } = useCategory({ page, pageSize });
   return (
-    <div className="mt-4">
+    <div className="mt-8">
       <div className="flex">
         <CategoryFormWrapper afterClose={() => {}}>
           <Button>Create</Button>

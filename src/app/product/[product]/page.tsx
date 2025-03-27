@@ -5,6 +5,8 @@ import { Category } from "~/types/category";
 import { categoryService } from "~/services/categoryService";
 import { productService } from "~/services/productService";
 import { hanldeProduct } from "~/utils/product";
+import { getServerSession } from "next-auth";
+import { authOptions } from "~/app/api/auth/[...nextauth]/route";
 
 type Props = {
   params: Promise<{ product: string }>;
@@ -25,7 +27,9 @@ const findParent = (categories: Category[], category: Category): Category[] => {
 
 async function ProductPage({ params }: Props) {
   const { product: productCode } = await params;
+  const session = await getServerSession(authOptions);
 
+  console.log(session);
   const rawProduct = await productService.getByCode(productCode);
   const product = hanldeProduct(rawProduct);
 
@@ -41,11 +45,10 @@ async function ProductPage({ params }: Props) {
     ? findParent(categories.items, category).reverse()
     : [];
 
-  console.log(product);
   return (
     <div id="productPage">
       <Header />
-      <div className="mt-8 container">
+      <div className="mt-8 container pt-24">
         <ol className="breadcumb flex space-x-4 border-b border-muted-foreground">
           {parentCategory.map((cgr, index) => {
             return (
@@ -66,7 +69,12 @@ async function ProductPage({ params }: Props) {
         </ol>
 
         <div className="product-detail mt-4">
-          <ProductDetail productData={product} />
+          {session?.user._id && (
+            <ProductDetail
+              userId={session?.user?._id || ""}
+              productData={product}
+            />
+          )}
         </div>
       </div>
     </div>

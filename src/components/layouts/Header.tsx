@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "./Navbar";
-import { Button } from "../ui/button";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import UserBtn from "./UserBtn";
@@ -20,9 +19,9 @@ async function Header() {
       </div>
       <div className="header-extra flex items-center gap-4">
         <UserBtn session={session} />
-        <Button size={"icon"} variant={"ghost"}>
+        <Link href={"/cart"}>
           <ShoppingBag />
-        </Button>
+        </Link>
         <Link href={"/"} className="rounded border p-2">
           Shop
         </Link>
