@@ -1,21 +1,43 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import useSWR from "swr";
-import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import ColorBox from "~/components/ui/color-box";
+import { Form } from "~/components/ui/form";
+import { Skeleton } from "~/components/ui/skeleton";
 import axiosClient from "~/lib/axios";
 import { cn } from "~/lib/utils";
 import { ICart, Item } from "~/types/cart";
+import { orderFormSchema, OrderFormValues } from "~/types/order";
 import { ProductColor } from "~/types/product";
 
 type Props = {
   userId: string;
 };
+
 function CartForm({ userId }: Props) {
+  const form = useForm<OrderFormValues>({
+    resolver: zodResolver(orderFormSchema),
+    defaultValues: {
+      user: userId,
+      items: [],
+      shippingFee: 0,
+      totalPrice: 0,
+    },
+  });
+
+  const { getValues, setValue, watch, control } = form;
+  const itemsFormArray = useFieldArray({
+    control,
+    name: "items",
+  });
+  const totalPrice = watch("totalPrice");
+  const { fields: items } = itemsFormArray;
+
   const { data, isLoading, mutate } = useSWR<ICart>(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/user/cart/${userId}`,
     (url: string) => axiosClient(url).then((e) => e.data)
@@ -25,26 +47,91 @@ function CartForm({ userId }: Props) {
     mutate();
   }, [mutate]);
 
+  const onSubmit = (values: OrderFormValues) => {
+    console.log("order submit", values);
+  };
+
+  const onChangeSelect = (index: number, newValue: boolean, item: Item) => {
+    console.log("onChange");
+    if (newValue) {
+      itemsFormArray.append({
+        ...item,
+        product: item.product._id,
+      });
+    } else {
+      itemsFormArray.remove(index);
+    }
+
+    calculateTotal();
+  };
+
+  const calculateTotal = () => {
+    console.log(items);
+    const total = items.reduce((acc, curr) => {
+      const productData = data?.items.find(
+        (item) => item.product._id === curr.product
+      );
+      return acc + curr.quantity * (productData?.product?.price ?? 0);
+    }, 0);
+
+    setValue("totalPrice", total);
+  };
+
   return (
-    <div>
-      {/* {true && (
-        <div className="flex flex-col loading gap-4">
-          {Array.from({ length: 20 }, (_, i) => i).map((_, i) => {
-            return <Skeleton key={i} className="w-full h-20" />;
+    <div className="relative">
+      {isLoading ? (
+        <div className="flex flex-col loading gap-4 gap-16">
+          {Array.from({ length: 4 }, (_, i) => i).map((_, i) => {
+            return (
+              <div key={i} className="flex gap-8 h-20">
+                <Skeleton className="w-24 h-24 rounded-full" />
+                <div className="flex flex-[2] gap-2 flex-col">
+                  <Skeleton className="w-full h-8 rounded-full" />
+                  <Skeleton className="w-full h-8 rounded-full" />
+                  <Skeleton className="w-full h-8 rounded-full" />
+                </div>
+              </div>
+            );
           })}
         </div>
-      )} */}
-
-      {!data ? (
-        <div>No data</div>
+      ) : !data ? (
+        <div className="mt-8">
+          <h4>No items in your cart</h4>
+        </div>
       ) : (
-        data.items.map((item, index) => {
-          return (
-            <div key={item.color + index} className="shadow-lg border rounded">
-              <ItemCard item={item} />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="total container p-8 w-full rounded shadow-lg border fixed inset-x-0 bottom-2">
+              <h3>Total: {totalPrice}</h3>
             </div>
-          );
-        })
+            <ul className="flex flex-col gap-8">
+              {data.items.map((item, index) => {
+                const selectIndex = items.findIndex(
+                  (i) =>
+                    i.product === item.product._id &&
+                    i.size === item.size &&
+                    i.color === item.color
+                );
+
+                const isSelect = selectIndex !== -1;
+                return (
+                  <li
+                    key={item.color + index}
+                    className="shadow-lg border rounded"
+                  >
+                    <ItemCard
+                      item={item}
+                      select={isSelect}
+                      onChangeSelect={() =>
+                        onChangeSelect(selectIndex, !isSelect, item)
+                      }
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </form>
+        </Form>
       )}
     </div>
   );
@@ -75,14 +162,26 @@ const ProductImgs = ({ pColor }: { pColor: ProductColor }) => {
   );
 };
 
-const ItemCard = ({ item }: { item: Item }) => {
+const ItemCard = ({
+  item,
+  select,
+  onChangeSelect,
+}: {
+  item: Item;
+  select: boolean;
+  onChangeSelect: () => void;
+}) => {
   const pColor = item.product.colors.find(
     (pColor) => pColor.color === item.color
   );
   return (
     <div className="flex">
       <div className="self-center px-8">
-        <Checkbox className="w-10 h-10" />
+        <Checkbox
+          className="w-10 h-10"
+          checked={select}
+          onCheckedChange={onChangeSelect}
+        />
       </div>
       <div className="h-40 w-40">
         {pColor && <ProductImgs pColor={pColor} />}

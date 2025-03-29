@@ -173,11 +173,9 @@ function ProductDetail({
               )}
             />
 
-            <section className="py-4">
-              <Button type="submit" disabled={isMutating || !valid}>
-                <Plus /> Add to Cart
-              </Button>
-            </section>
+            <Button type="submit" className="mt-8" disabled={isMutating || !valid}>
+              <Plus /> Add to Cart
+            </Button>
           </form>
         </Form>
       </div>

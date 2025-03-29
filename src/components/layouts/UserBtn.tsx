@@ -39,9 +39,7 @@ function UserBtn({ session }: { session: Session | null }) {
     </ExistButton>
   ) : (
     <Link href={user ? "/profile" : "/auth/signin"}>
-      <Button size={"icon"} variant={"link"}>
-        <User />
-      </Button>
+      <User />
     </Link>
   );
 }
