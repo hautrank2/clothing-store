@@ -17,6 +17,17 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-expressions": "off",
       eqeqeq: ["error", "always"], // Enforce strict equality (===)
     },
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: ["@radix-ui/*"],
+            message: "Don't import @radix-ui",
+          },
+        ],
+      },
+    ],
   },
 ];
 

@@ -2,24 +2,32 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import React, { useEffect, useMemo, useState } from "react";
+import { useFieldArray, useForm, UseFormSetError } from "react-hook-form";
 import useSWR from "swr";
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import ColorBox from "~/components/ui/color-box";
-import { Form } from "~/components/ui/form";
+import { Form, FormField } from "~/components/ui/form";
+import { QuantityInput } from "~/components/ui/quantity-input";
 import { Skeleton } from "~/components/ui/skeleton";
 import axiosClient from "~/lib/axios";
 import { cn } from "~/lib/utils";
-import { ICart, Item } from "~/types/cart";
+import { ICart, Item, ItemFormValues } from "~/types/cart";
 import { orderFormSchema, OrderFormValues } from "~/types/order";
-import { ProductColor } from "~/types/product";
+import { Product, ProductColor, ProductSizeStock } from "~/types/product";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { IUser } from "~/types/user";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Address, AddressFormValues } from "~/types/address";
+import AddressInfo from "~/components/address/AddressInfo";
 
 type Props = {
-  userId: string;
+  user: IUser;
 };
 
-function CartForm({ userId }: Props) {
+function CartForm({ user }: Props) {
+  const userId = user._id;
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
@@ -30,7 +38,14 @@ function CartForm({ userId }: Props) {
     },
   });
 
-  const { getValues, setValue, watch, control } = form;
+  const {
+    setValue,
+    watch,
+    control,
+    setError,
+    getValues,
+    formState: { errors, isValid },
+  } = form;
   const itemsFormArray = useFieldArray({
     control,
     name: "items",
@@ -47,12 +62,15 @@ function CartForm({ userId }: Props) {
     mutate();
   }, [mutate]);
 
+  useEffect(() => {
+    console.log("error", errors);
+  }, [JSON.stringify(errors)]);
+
   const onSubmit = (values: OrderFormValues) => {
     console.log("order submit", values);
   };
 
   const onChangeSelect = (index: number, newValue: boolean, item: Item) => {
-    console.log("onChange");
     if (newValue) {
       itemsFormArray.append({
         ...item,
@@ -66,7 +84,6 @@ function CartForm({ userId }: Props) {
   };
 
   const calculateTotal = () => {
-    console.log(items);
     const total = items.reduce((acc, curr) => {
       const productData = data?.items.find(
         (item) => item.product._id === curr.product
@@ -77,10 +94,14 @@ function CartForm({ userId }: Props) {
     setValue("totalPrice", total);
   };
 
+  useEffect(() => {
+    calculateTotal();
+  }, [JSON.stringify(getValues())]);
+
   return (
     <div className="relative">
       {isLoading ? (
-        <div className="flex flex-col loading gap-4 gap-16">
+        <div className="flex flex-col loading gap-4 gap-8">
           {Array.from({ length: 4 }, (_, i) => i).map((_, i) => {
             return (
               <div key={i} className="flex gap-8 h-20">
@@ -101,35 +122,88 @@ function CartForm({ userId }: Props) {
       ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="total container p-8 w-full rounded shadow-lg border fixed inset-x-0 bottom-2">
-              <h3>Total: {totalPrice}</h3>
+            <div
+              className={cn(
+                "container px-8 py-4 w-full rounded shadow-lg border fixed inset-x-0 bottom-2",
+                "flex justify-between items-center"
+              )}
+            >
+              <h3>
+                Total: <span className="font-bold">${totalPrice}</span>
+              </h3>
+              <Button size={"lg"} disabled={!isValid}>
+                Buy
+              </Button>
             </div>
-            <ul className="flex flex-col gap-8">
-              {data.items.map((item, index) => {
-                const selectIndex = items.findIndex(
-                  (i) =>
-                    i.product === item.product._id &&
-                    i.size === item.size &&
-                    i.color === item.color
-                );
 
-                const isSelect = selectIndex !== -1;
-                return (
-                  <li
-                    key={item.color + index}
-                    className="shadow-lg border rounded"
-                  >
-                    <ItemCard
-                      item={item}
-                      select={isSelect}
-                      onChangeSelect={() =>
-                        onChangeSelect(selectIndex, !isSelect, item)
-                      }
-                    />
-                  </li>
-                );
-              })}
-            </ul>
+            <Tabs defaultValue="items" className="w-full">
+              <TabsList>
+                <TabsTrigger value="items">Items</TabsTrigger>
+                <TabsTrigger value="info">Information</TabsTrigger>
+              </TabsList>
+              <TabsContent value="items">
+                <ul className="flex flex-col gap-4 pt-4">
+                  {data.items.map((item, index) => {
+                    const selectIndex = items.findIndex(
+                      (i) =>
+                        i.product === item.product._id &&
+                        i.size === item.size &&
+                        i.color === item.color
+                    );
+
+                    const productSizeStock = getProductSizeStock(
+                      item,
+                      item.product
+                    );
+
+                    const isSelect = selectIndex !== -1;
+                    const field = items[selectIndex];
+                    return (
+                      <li
+                        key={item.color + index}
+                        className="shadow-lg border rounded"
+                      >
+                        <ItemCard
+                          indexItem={selectIndex}
+                          field={field}
+                          item={item}
+                          select={isSelect}
+                          onChangeSelect={() =>
+                            onChangeSelect(selectIndex, !isSelect, item)
+                          }
+                          setError={setError}
+                          productSizeStock={productSizeStock}
+                          onChangeQuantity={(quantity) => {
+                            isSelect &&
+                              itemsFormArray.update(selectIndex, {
+                                ...field,
+                                quantity,
+                              });
+                          }}
+                        />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </TabsContent>
+              <TabsContent value="info">
+                <div className="pt-4">
+                  <FormField
+                    control={control}
+                    name="address"
+                    render={({ field }) => {
+                      return (
+                        <AddressCards
+                          value={field.value}
+                          onChange={field.onChange}
+                          data={user.address ?? []}
+                        />
+                      );
+                    }}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
           </form>
         </Form>
       )}
@@ -162,18 +236,80 @@ const ProductImgs = ({ pColor }: { pColor: ProductColor }) => {
   );
 };
 
+const AddressCards = ({
+  value,
+  onChange,
+  data,
+}: {
+  data: Address[];
+  value: AddressFormValues;
+  onChange: () => void;
+}) => {
+  const index = value
+    ? data.findIndex(
+        (add) =>
+          !Object.entries(add).some(([key, value]) => value !== value[key])
+      )
+    : -1;
+  return (
+    <div className="flex">
+      <RadioGroup value={index.toString()}>
+        <div className="flex flex-col gap-2">
+          {data.map((add, ix) => (
+            <div key={ix} className="flex gap-4">
+              <RadioGroupItem value={ix.toString()} />
+              <div className="flex flex-col gap-2">
+                <AddressInfo address={add} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </RadioGroup>
+    </div>
+  );
+};
+
 const ItemCard = ({
+  indexItem,
+  field,
   item,
   select,
   onChangeSelect,
+  productSizeStock,
+  onChangeQuantity,
+  setError,
 }: {
+  indexItem: number;
+  field: ItemFormValues | null;
   item: Item;
   select: boolean;
   onChangeSelect: () => void;
+  onChangeQuantity: (n: number) => void;
+  productSizeStock?: ProductSizeStock | null;
+  setError: UseFormSetError<OrderFormValues>;
 }) => {
+  const data = useMemo(() => {
+    return {
+      ...item,
+      ...field,
+      product: item.product,
+    };
+  }, [field, item]);
   const pColor = item.product.colors.find(
     (pColor) => pColor.color === item.color
   );
+
+  useEffect(() => {
+    if (field && productSizeStock && indexItem !== -1) {
+      if (field.quantity > productSizeStock.stock) {
+        setError(`items.${indexItem}.quantity`, {
+          type: "max",
+          message: "Over stock",
+        });
+      }
+    }
+  }, [field, indexItem, productSizeStock, setError]);
+
   return (
     <div className="flex">
       <div className="self-center px-8">
@@ -187,47 +323,59 @@ const ItemCard = ({
         {pColor && <ProductImgs pColor={pColor} />}
       </div>
       <div className="flex-1 pt-2 px-4">
-        <h4 className="font-semibold">{item.product.title}</h4>
+        <h4 className="font-semibold">{data.product.title}</h4>
 
-        <div className="py-px flex border-border/80 border-b">
+        <div className="py-px flex border-border/80 border-b items-center">
           <div className="flex-[1]">
             <p>Size:</p>
           </div>
           <div className="flex-[4]">
-            <p>{item.size}</p>
+            <p>{data.size}</p>
           </div>
         </div>
 
-        <div className="py-px flex border-border/80 border-b">
+        <div className="py-px flex border-border/80 border-b items-center">
           <div className="flex-[1]">
             <p>Color:</p>
           </div>
           <div className="flex-[4] flex items-center gap-2">
-            <p>{item.color}</p>
+            <p>{data.color}</p>
             <ColorBox color={pColor?.hexCode || ""} className="h-4 w-4" />
           </div>
         </div>
 
-        <div className="py-px flex border-border/80 border-b">
+        <div className="py-px flex border-border/80 border-b items-center">
           <div className="flex-[1]">
             <p>Quantity:</p>
           </div>
-          <div className="flex-[4]">
-            <p>{item.quantity}</p>
+          <div className="flex-[4] py-2 flex items-center gap-4">
+            {select ? (
+              <QuantityInput
+                className="w-20 h-6 px-2"
+                value={data.quantity}
+                onValueChange={(e) => onChangeQuantity(e)}
+                max={productSizeStock?.stock}
+                min={1}
+                disabled={!select}
+              />
+            ) : (
+              <p>{data.quantity}</p>
+            )}
+            <p>Max: {productSizeStock?.stock}</p>
           </div>
         </div>
 
-        <div className="py-px flex border-border/80 border-b">
+        <div className="py-px flex border-border/80 border-b items-center">
           <div className="flex-[1]">
             <p>Price:</p>
           </div>
           <div className="flex-[4]">
             <p>
               <span className="font-bold">
-                ${item.quantity * item.product.price}
+                ${data.quantity * data.product.price}
               </span>{" "}
               ($
-              {item.product.price}/item)
+              {data.product.price}/item)
             </p>
           </div>
         </div>
@@ -237,3 +385,17 @@ const ItemCard = ({
 };
 
 export default CartForm;
+
+const getProductSizeStock = (
+  item: Item,
+  product: Product
+): ProductSizeStock | null => {
+  const color = product.colors.find(
+    (prod: ProductColor) => prod.color === item.color
+  );
+  if (!color) return null;
+  return (
+    color.sizes.find((size: ProductSizeStock) => size.size === item.size) ||
+    null
+  );
+};
