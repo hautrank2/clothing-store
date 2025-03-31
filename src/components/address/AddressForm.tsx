@@ -8,30 +8,35 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { useForm } from "react-hook-form";
-import { AddressFormValues, addressSchema } from "~/types/address";
+import { Address, AddressFormValues, addressSchema } from "~/types/address";
 import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
 
-function AddressForm() {
+function AddressForm({
+  onSubmit,
+  defaultValues,
+}: {
+  onSubmit: (values: AddressFormValues) => void;
+  defaultValues?: Address;
+}) {
+  const isEdit = !!defaultValues;
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
       street: "",
       city: "",
-      province: "",
+      district: "",
       postalCode: "",
       country: "",
+      type: "home",
     },
   });
 
-  const onSubmit = (data: AddressFormValues) => {
-    console.log("Address Data:", data);
-  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {(["street", "city", "province", "postalCode", "country"] as const).map(
+        {(["country", "city", "district", "street", "postalCode"] as const).map(
           (fieldName) => (
             <FormField
               key={fieldName}
