@@ -22,8 +22,9 @@ function AddressInfo({
   address,
   className,
   addressData,
-  addressIndex,
+  addressIndex = 0,
   afterEdit,
+  disableEdit,
 }: {
   address: Address;
   userData?: IUser;
@@ -31,43 +32,52 @@ function AddressInfo({
   addressData?: Address[];
   className?: string;
   afterEdit?: () => void;
+  disableEdit?: boolean;
 }) {
   const [openEdit, setOpenEdit] = useState(false);
 
   const onEditAddress = async (values: AddressFormValues) => {
-    if (!addressData || !addressIndex || !userData) return;
+    console.log(addressData, addressIndex, userData);
+    if (!addressData || !userData) return;
     try {
       const body = addressData.slice();
       body[addressIndex] = { ...values, type: values.type as Address["type"] };
       await axiosClient.put(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/${userData._id}/address`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/user/${userData._id}/address`,
         body
       );
+
       afterEdit && afterEdit();
+      setOpenEdit(false);
     } catch (err) {}
   };
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <Dialog open={openEdit} onOpenChange={setOpenEdit}>
-        <DialogTrigger asChild>
-          <Button variant={"ghost"}>
-            <Edit />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add address</DialogTitle>
-            <DialogDescription>Fill below informations</DialogDescription>
-          </DialogHeader>
-          <AddressForm defaultValues={address} onSubmit={onEditAddress} />
-        </DialogContent>
-      </Dialog>
+      <div className="flex gap-4">
+        <h4>Address {addressIndex || 0 + 1} </h4>
+        {disableEdit || (
+          <Dialog open={openEdit} onOpenChange={setOpenEdit}>
+            <DialogTrigger asChild>
+              <Button variant={"ghost"}>
+                <Edit />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Edit address</DialogTitle>
+                <DialogDescription>Fill below informations</DialogDescription>
+              </DialogHeader>
+              <AddressForm defaultValues={address} onSubmit={onEditAddress} />
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
 
       {Object.entries(address).map(([key, value]) => {
         return (
           <div key={key} className="flex">
-            <div className="flex-[1]">{key}</div>
+            <div className="flex-[1] capitalize">{key}</div>
             <div className="flex-[2]">{value}</div>
           </div>
         );

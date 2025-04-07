@@ -16,9 +16,13 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { AddressForm } from "~/components/address/AddressForm";
+import { useToast } from "~/hooks/use-toast";
+import { cn } from "~/lib/utils";
 
 function AddressList({ userData: _userData }: { userData: IUser }) {
   const [openAdd, setOpenAdd] = useState(false);
+  const { toast } = useToast();
+
   const { data: userData, mutate } = useSWR<IUser>(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/user/filter?${new URLSearchParams({
       username: _userData.username,
@@ -31,16 +35,27 @@ function AddressList({ userData: _userData }: { userData: IUser }) {
       const body = userData?.address?.slice();
       body?.unshift({ ...values, type: values.type as Address["type"] });
       await axiosClient.put(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/${_userData._id}/address`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/user/${_userData._id}/address`,
         body
       );
+      toast({
+        title: "Success",
+        description: "Address added successfully",
+        variant: "default",
+      });
       mutate();
-    } catch (err) {}
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: JSON.stringify(err),
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="address list">
-      <div className="flex justify-between">
+      <div className="flex justify-between mb-6">
         <h1>Address list</h1>
         <Dialog open={openAdd} onOpenChange={setOpenAdd}>
           <DialogTrigger asChild>
@@ -60,14 +75,15 @@ function AddressList({ userData: _userData }: { userData: IUser }) {
         {userData &&
           userData?.address?.map((address, index) => {
             return (
-              <AddressInfo
-                address={address}
-                key={index}
-                addressIndex={index}
-                addressData={userData.address}
-                userData={userData}
-                afterEdit={() => mutate()}
-              />
+              <div key={index} className={cn(index !== 0 && "border-t")}>
+                <AddressInfo
+                  address={address}
+                  addressIndex={index}
+                  addressData={userData.address}
+                  userData={userData}
+                  afterEdit={() => mutate()}
+                />
+              </div>
             );
           })}
       </ul>

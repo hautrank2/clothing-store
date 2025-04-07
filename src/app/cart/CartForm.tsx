@@ -8,7 +8,13 @@ import useSWR from "swr";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import ColorBox from "~/components/ui/color-box";
-import { Form, FormField } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "~/components/ui/form";
 import { QuantityInput } from "~/components/ui/quantity-input";
 import { Skeleton } from "~/components/ui/skeleton";
 import axiosClient from "~/lib/axios";
@@ -21,12 +27,15 @@ import { IUser } from "~/types/user";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Address, AddressFormValues } from "~/types/address";
 import AddressInfo from "~/components/address/AddressInfo";
+import { Input } from "~/components/ui/input";
+import { useToast } from "~/hooks/use-toast";
 
 type Props = {
   user: IUser;
 };
 
 function CartForm({ user }: Props) {
+  const { toast } = useToast();
   const userId = user._id;
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
@@ -35,22 +44,21 @@ function CartForm({ user }: Props) {
       items: [],
       shippingFee: 0,
       totalPrice: 0,
+      phone: user.phone || "",
+      address: user.address?.[0] || {},
     },
   });
 
-  const {
-    setValue,
-    watch,
-    control,
-    setError,
-    getValues,
-    formState: { errors, isValid },
-  } = form;
+  const { setValue, watch, control, setError, getValues, formState } = form;
+
+  const { errors, isValid } = formState;
+
   const itemsFormArray = useFieldArray({
     control,
     name: "items",
   });
   const totalPrice = watch("totalPrice");
+  const address = watch("address");
   const { fields: items } = itemsFormArray;
 
   const { data, isLoading, mutate } = useSWR<ICart>(
@@ -66,8 +74,25 @@ function CartForm({ user }: Props) {
     console.log("error", errors);
   }, [JSON.stringify(errors)]);
 
-  const onSubmit = (values: OrderFormValues) => {
-    console.log("order submit", values);
+  const onSubmit = async (values: OrderFormValues) => {
+    try {
+      await axiosClient.post(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/order`,
+        values
+      );
+      toast({
+        title: "Order created",
+        description: "Your order has been created successfully.",
+      });
+      mutate();
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create order.",
+        variant: "destructive",
+      });
+    }
   };
 
   const onChangeSelect = (index: number, newValue: boolean, item: Item) => {
@@ -98,6 +123,10 @@ function CartForm({ user }: Props) {
     calculateTotal();
   }, [JSON.stringify(getValues())]);
 
+  useEffect(() => {
+    console.log(address);
+  }, [address]);
+
   return (
     <div className="relative">
       {isLoading ? (
@@ -125,21 +154,43 @@ function CartForm({ user }: Props) {
             <div
               className={cn(
                 "container px-8 py-4 w-full rounded shadow-lg border fixed inset-x-0 bottom-2",
-                "flex justify-between items-center"
+                "flex flex-col gap-2"
               )}
             >
-              <h3>
-                Total: <span className="font-bold">${totalPrice}</span>
-              </h3>
-              <Button size={"lg"} disabled={!isValid}>
-                Buy
-              </Button>
+              <div className="max-w-[400px]">
+                <FormField
+                  control={control}
+                  name="phone"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="flex flex-row items-center gap-2">
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your phone number"
+                            className="mt-0"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+              <div className="flex justify-between">
+                <h3>
+                  Total: <span className="font-bold">${totalPrice}</span>
+                </h3>
+                <Button size={"lg"} disabled={!isValid}>
+                  Buy
+                </Button>
+              </div>
             </div>
 
             <Tabs defaultValue="items" className="w-full">
               <TabsList>
                 <TabsTrigger value="items">Items</TabsTrigger>
-                <TabsTrigger value="info">Information</TabsTrigger>
+                <TabsTrigger value="info">Address</TabsTrigger>
               </TabsList>
               <TabsContent value="items">
                 <ul className="flex flex-col gap-4 pt-4">
@@ -195,7 +246,7 @@ function CartForm({ user }: Props) {
                       return (
                         <AddressCards
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(values) => setValue("address", values)}
                           data={user.address ?? []}
                         />
                       );
@@ -243,23 +294,30 @@ const AddressCards = ({
 }: {
   data: Address[];
   value: AddressFormValues;
-  onChange: () => void;
+  onChange: (values: AddressFormValues) => void;
 }) => {
   const index = value
     ? data.findIndex(
         (add) =>
-          !Object.entries(add).some(([key, value]) => value !== value[key])
+          !Object.entries(add).some(([key, v]) => {
+            return key in value && v !== value[key as keyof AddressFormValues];
+          })
       )
     : -1;
+
   return (
     <div className="flex">
-      <RadioGroup value={index.toString()}>
+      <RadioGroup
+        onValueChange={(value) => onChange(data[Number(value)])}
+        value={index.toString()}
+        className="w-full"
+      >
         <div className="flex flex-col gap-2">
           {data.map((add, ix) => (
-            <div key={ix} className="flex gap-4">
+            <div key={ix} className="flex gap-4 items-center">
               <RadioGroupItem value={ix.toString()} />
-              <div className="flex flex-col gap-2">
-                <AddressInfo address={add} />
+              <div className="w-full">
+                <AddressInfo address={add} disableEdit />
               </div>
             </div>
           ))}

@@ -46,7 +46,6 @@ export default function SigninForm({ prePathname }: { prePathname: string }) {
   };
 
   const onSigninByGoogle = () => {
-    console.log("prePathname", prePathname);
     try {
       setLoading(true);
       signIn("google", { callbackUrl: prePathname });

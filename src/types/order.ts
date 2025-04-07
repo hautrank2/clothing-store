@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { itemSchema } from "./cart";
+import { Item, itemSchema } from "./cart";
 import { addressSchema } from "./address";
 
 export enum OrderStatus {
@@ -25,3 +25,9 @@ export const orderFormSchema = z.object({
 });
 
 export type OrderFormValues = z.infer<typeof orderFormSchema>;
+
+export type IOrder = Omit<z.infer<typeof orderFormSchema>, "items"> & {
+  createdAt: string;
+  updatedAt: string;
+  items: Item[]; // Ghi đè kiểu items
+};

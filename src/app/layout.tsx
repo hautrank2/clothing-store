@@ -3,6 +3,9 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 import "../styles/main.scss";
 import { Toaster } from "~/components/ui/sonner";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import AuthHandler from "./AuthHandler";
 
 const sans = Nunito({
   variable: "--font-geist-sans",
@@ -20,9 +23,12 @@ export default async function RootLayout({
   children: React.ReactNode;
   session: any;
 }>) {
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en">
       <body className={`${sans.variable} antialiased`}>
+        <AuthHandler userData={session?.user} />
+
         {children}
         <Toaster closeButton />
       </body>

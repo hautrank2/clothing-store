@@ -45,7 +45,7 @@ function ProductCard({ data }: { data: Product }) {
         ))}
       </div>
       <div className="product-info my-2 space-y-4">
-        <p className="mt-1">{`$${data.price}`}</p>
+        <p className="mt-1 font-bold">{`$${data.price}`}</p>
         <p className="font-semibold">{data.title}</p>
         <div className="flex product-colors gap-1">
           {productByColor.map((pColor, ix) => (

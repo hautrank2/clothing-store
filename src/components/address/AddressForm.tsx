@@ -23,7 +23,7 @@ function AddressForm({
   const isEdit = !!defaultValues;
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
-    defaultValues: {
+    defaultValues: defaultValues || {
       street: "",
       city: "",
       district: "",
