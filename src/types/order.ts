@@ -10,6 +10,8 @@ export enum OrderStatus {
   CANCELLED = "cancelled",
 }
 
+export const ORDER_STATUS_VALUES = Object.values(OrderStatus);
+
 export const orderFormSchema = z.object({
   user: z.string().min(1, "User ID is required"),
   items: z.array(itemSchema).min(1, "At least one item is required"),
@@ -27,6 +29,7 @@ export const orderFormSchema = z.object({
 export type OrderFormValues = z.infer<typeof orderFormSchema>;
 
 export type IOrder = Omit<z.infer<typeof orderFormSchema>, "items"> & {
+  _id: string;
   createdAt: string;
   updatedAt: string;
   items: Item[]; // Ghi đè kiểu items

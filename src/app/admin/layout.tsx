@@ -1,4 +1,4 @@
-import { ShoppingBasket, SquareMenu } from "lucide-react";
+import { Ship, ShoppingBasket, SquareMenu } from "lucide-react";
 import { headers } from "next/headers";
 import React from "react";
 import Header from "~/components/layouts/Header";
@@ -30,6 +30,11 @@ async function AdminLayout({ children }: { children: React.ReactNode }) {
       url: "/admin/product",
       icon: ShoppingBasket,
     },
+    {
+      title: "Order",
+      url: "/admin/order",
+      icon: Ship,
+    },
   ];
   return (
     <div>
@@ -56,12 +61,7 @@ async function AdminLayout({ children }: { children: React.ReactNode }) {
           </SidebarContent>
           <SidebarFooter />
         </Sidebar>
-        <main className="admin-page m-8 w-full">
-          <div className="breadcumb sticky">
-            <h4>{path}</h4>
-          </div>
-          {children}
-        </main>
+        <main className="admin-page m-8 w-full pt-12">{children}</main>
       </SidebarProvider>
     </div>
   );

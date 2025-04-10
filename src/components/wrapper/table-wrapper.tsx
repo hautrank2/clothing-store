@@ -180,7 +180,7 @@ const TableWrapper: FunctionComponent<IProp> = ({
                   {columns.map((col: IColumn, colIndex) => {
                     const key = col.key || "" + colIndex;
                     const value = getValueFromPath(row, col.dataIndex);
-                    let el = value;
+                    let el = <p>{value}</p>;
                     switch (col.type) {
                       case "bagde":
                         el = <Badge>{value}</Badge>;

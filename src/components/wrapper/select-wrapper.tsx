@@ -13,12 +13,12 @@ import {
 import { cn } from "~/lib/utils";
 import { Option } from "~/types/common";
 
-interface IProp {
+type IProp = {
   options?: Option[] | [];
   placeholder?: string;
   render?: (value: any, option: Option) => any;
   [key: string]: any;
-}
+};
 
 const SelectWrapper: FunctionComponent<IProp> = forwardRef(
   (

@@ -37,7 +37,6 @@ function AddressInfo({
   const [openEdit, setOpenEdit] = useState(false);
 
   const onEditAddress = async (values: AddressFormValues) => {
-    console.log(addressData, addressIndex, userData);
     if (!addressData || !userData) return;
     try {
       const body = addressData.slice();
@@ -84,6 +83,20 @@ function AddressInfo({
       })}
     </div>
   );
+}
+
+export function addressToString(address: Address): string {
+  const { street, district, city, country, zipCode } = address;
+
+  return [
+    street,
+    district,
+    city,
+    country,
+    zipCode, // nếu có thì thêm vào
+  ]
+    .filter(Boolean) // loại bỏ undefined hoặc rỗng
+    .join(", ");
 }
 
 export default AddressInfo;
