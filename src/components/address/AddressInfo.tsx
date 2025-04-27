@@ -54,7 +54,7 @@ function AddressInfo({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex gap-4">
-        <h4>Address {addressIndex || 0 + 1} </h4>
+        <h4>Address {addressIndex + 1} </h4>
         {disableEdit || (
           <Dialog open={openEdit} onOpenChange={setOpenEdit}>
             <DialogTrigger asChild>

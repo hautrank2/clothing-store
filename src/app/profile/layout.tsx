@@ -13,16 +13,13 @@ async function ProfileLayout({ children }: Props) {
     <div className="cartPage">
       <Header />
       <div className="mt-8 container pt-24 px-8">
-        <div className="flex gap-8 relative">
+        <div className="flex gap-12 relative">
           <div className="fixed top-20 w-32">
             <ProfileTab />
           </div>
-
-          <Card className="flex-1 ms-32">
-            <CardContent className="space-y-4 text-sm pt-8">
-              {children}
-            </CardContent>
-          </Card>
+          <div className="flex-1 ms-32">
+            <div className="space-y-4 text-sm pt-8">{children}</div>
+          </div>
         </div>
       </div>
     </div>

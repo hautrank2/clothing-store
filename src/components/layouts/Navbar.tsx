@@ -10,6 +10,7 @@ import {
 } from "~/components/ui/navigation-menu";
 import Link from "next/link";
 import { categoryService } from "~/services/categoryService";
+import { Typography } from "../ui/typography";
 
 async function Navbar() {
   const categoryData = await categoryService.getAll();
@@ -34,9 +35,12 @@ async function Navbar() {
                   return (
                     <li key={cgr._id} className="">
                       <Link href={"/category/" + cgr.code}>
-                        <p className="font-semibold hover:font-bold">
+                        <Typography
+                          variant={"p"}
+                          className="font-semibold hover:font-bold"
+                        >
                           {cgr.title}
-                        </p>
+                        </Typography>
                       </Link>
                       <ul className="nav-item-subcategory mt-2">
                         {categoryData.items
@@ -47,9 +51,12 @@ async function Navbar() {
                             return (
                               <li key={cgr2._id} className="text-nowrap">
                                 <Link href={"/category/" + cgr2.code}>
-                                  <p className="text-sm leading-8 hover:underline">
+                                  <Typography
+                                    variant={"p"}
+                                    className="text-sm leading-8 hover:underline"
+                                  >
                                     {cgr2.title}
-                                  </p>
+                                  </Typography>
                                 </Link>
                               </li>
                             );

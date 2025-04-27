@@ -134,7 +134,7 @@ const TableWrapper: FunctionComponent<IProp> = ({
         style={{ maxHeight: height }}
       >
         {loading && (
-          <div className="table-loading bg-primary/10 absolute inset-0 z-20 flex items-center justify-between">
+          <div className="table-loading absolute inset-0 z-20 flex items-center justify-between">
             <div className="m-auto p-4">
               <Spin className="m-auto" size={64} />
             </div>
@@ -283,7 +283,10 @@ const TableWrapper: FunctionComponent<IProp> = ({
             })}
           </TableBody>
           {!hideFooter && (
-            <TableFooter className="sticky" style={{ bottom: -1 }}>
+            <TableFooter
+              className="sticky bg-foreground/5"
+              style={{ bottom: -1 }}
+            >
               <TableRow>
                 <TableCell className="table-footer-info"></TableCell>
                 <TableCell colSpan={colCount} className="pagination text-right">

@@ -44,6 +44,7 @@ function AddressList({ userData: _userData }: { userData: IUser }) {
         variant: "default",
       });
       mutate();
+      setOpenAdd(false);
     } catch (err) {
       toast({
         title: "Error",
@@ -70,12 +71,12 @@ function AddressList({ userData: _userData }: { userData: IUser }) {
           </DialogContent>
         </Dialog>
       </div>
-      <ul className="flex flex-col">
+      <ul className="flex flex-col gap-4">
         {!userData || (userData?.address?.length === 0 && <p>No data</p>)}
         {userData &&
           userData?.address?.map((address, index) => {
             return (
-              <div key={index} className={cn(index !== 0 && "border-t")}>
+              <div key={index} className={cn(index !== 0 && "border-t pt-4")}>
                 <AddressInfo
                   address={address}
                   addressIndex={index}

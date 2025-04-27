@@ -22,11 +22,7 @@ function OrderPage() {
   const pageSize = searchParams.get("pageSize") || "10";
   const router = useRouter();
   const pathname = usePathname();
-  const {
-    data,
-    mutate,
-    isLoading: loading,
-  } = useSWR<PaginationResponse<IOrder>>(
+  const { data, isLoading: loading } = useSWR<PaginationResponse<IOrder>>(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/order`,
     (url: string) =>
       axiosClient

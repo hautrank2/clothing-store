@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn(data) {
       const { email } = data.user;
-      try {
+      try { 
         const exist = await userService.findByFilter({ email });
         if (exist) {
           return true;

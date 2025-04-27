@@ -2,6 +2,7 @@ import React from "react";
 import Header from "~/components/layouts/Header";
 import SigninForm from "./SigninForm";
 import { headers } from "next/headers";
+import { cn } from "~/lib/utils";
 
 async function LoginPage({}) {
   const headerList = await headers();
@@ -18,9 +19,21 @@ async function LoginPage({}) {
 
   return (
     <div id="loginPage">
-      <Header />
-      <div className="bg-foreground/10 pt-16 h-screen flex justify-center items-center">
-        <SigninForm prePathname={prevPath} />
+      <Header theme={"light"} className="bg-transparent border-b-0" />
+      <div
+        className={cn(
+          "pt-16 h-screen flex justify-center items-center",
+          "bg-[url(/img/banner/login-bg.jpg)] bg-cover bg-origin-padding bg-no-repeat bg-fixed bg-left"
+        )}
+      >
+        <div
+          className={cn(
+            "-translate-y-20 xl:translate-y-0",
+            "xl:absolute xl:right-60 xl:top-[50%] xl:-translate-y-1/2"
+          )}
+        >
+          <SigninForm prePathname={prevPath} />
+        </div>
       </div>
     </div>
   );
